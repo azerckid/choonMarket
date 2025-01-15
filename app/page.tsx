@@ -10,6 +10,7 @@ export default function Home() {
                             <span>{index}</span>
                             <div className="size-6 bg-red-500 text-white flex items-center justify-center rounded-full animate-ping absolute"></div>
                         </div>
+                        <input></input>
                     </div>
                 )}
             </div>
