@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { username: email, password } = body;
-
+        console.log(email, password)
         // return NextResponse.json(body)
 
         // 입력값 검증
