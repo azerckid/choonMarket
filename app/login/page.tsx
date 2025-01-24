@@ -6,9 +6,8 @@ import { useActionState } from "react";
 import { handleForm } from "./action";
 
 export default function Login() {
-    const [state, action] = useActionState(handleForm, {
-        errors: [] as string[]
-    })
+    const [state, action] = useActionState(handleForm, null
+    )
     return (
         <div className="flex flex-col gap-10 py-8 px-6">
             <div className="flex flex-col gap-2 *:font-medium">
@@ -22,14 +21,12 @@ export default function Login() {
                     type="email"
                     placeholder="your e-mail"
                     required
-                    errors={[]}
                 />
                 <FormInput
                     name="password"
                     type="password"
                     placeholder="password"
                     required
-                    errors={state?.errors ?? []}
                 />
                 <FormButton title="LogIn" />
             </form>
