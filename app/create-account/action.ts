@@ -1,34 +1,51 @@
-"use server"
-import { z } from "zod"
+"use server";
+import { z } from "zod";
 
-const usernameSchema = z.string().min(5).max(10);
+const checkUsername = (username: string) => {
+  const forbiddenWords = ["sex", "fuck", "porn", "nsfw", "xxx"];
+  return !forbiddenWords.some(word => username.toLowerCase().includes(word));
+}
+const checkPassword = ({ password, confirmPassword }: { password: string, confirmPassword: string }) => {
+  return password === confirmPassword;
+}
+
+const formSchema = z
+  .object({
+    username: z
+      .string({
+        invalid_type_error: "username must be a string",
+        required_error: "where is my username?"
+      })
+      .min(5, "Username must be at least 5 characters")
+      .max(10, "Username must be less than 10 characters")
+      .refine(checkUsername, "that word not allowed"),
+    email: z.string().email("Invalid email address"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine(checkPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export const createAccount = async (prevState: any, formData: FormData) => {
-    try {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        const data = {
-            username: formData.get("username"),
-            email: formData.get("email"),
-            password: formData.get("password"),
-            confirmPassword: formData.get("confirmPassword")
-        }
-        console.log("data", data);
-
-        // Here you would typically:
-        // 1. Validate the input
-        usernameSchema.parse(data.username);
-        // 2. Check if user already exists
-        // 3. Hash the password
-        // 4. Store in database
-        // 5. Create session/token
-
-        return { success: true, message: "Account created successfully" };
-    } catch (error) {
-        return {
-            success: false,
-            message: error instanceof Error ? error.message : "Failed to create account"
-        };
+  const data = {
+    username: formData.get("username"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+  };
+  try {
+    const result = formSchema.safeParse(data);
+    if (!result.success) {
+      return result.error.flatten();
     }
-}
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, fieldErrors: error.flatten().fieldErrors };
+    }
+    return { success: false, message: "Failed to create account" };
+  }
+};
