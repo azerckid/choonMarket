@@ -4,6 +4,12 @@ import Input from "@/components/input";
 import SocialLogin from "@/components/social-login";
 import { useActionState } from "react";
 import { createAccount } from "./action";
+import { USERNAME_MAX_LENGTH } from "@/lib/constants";
+import { USERNAME_MIN_LENGTH } from "@/lib/constants";
+import { EMAIL_MIN_LENGTH } from "@/lib/constants";
+import { EMAIL_MAX_LENGTH } from "@/lib/constants";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
+import { PASSWORD_MAX_LENGTH } from "@/lib/constants";
 
 export default function CreateAccount() {
   const [state, action] = useActionState(createAccount, null);
@@ -21,14 +27,16 @@ export default function CreateAccount() {
           placeholder="Username"
           required
           errors={state?.fieldErrors?.username ?? []}
-          minLength={5}
-          maxLength={10}
+          minLength={USERNAME_MIN_LENGTH}
+          maxLength={USERNAME_MAX_LENGTH}
         />
         <Input
           name="email"
           type="email"
           placeholder="your e-mail"
           required
+          minLength={EMAIL_MIN_LENGTH}
+          maxLength={EMAIL_MAX_LENGTH}
           errors={state?.fieldErrors?.email ?? []}
         />
         <Input
@@ -37,7 +45,8 @@ export default function CreateAccount() {
           placeholder="password"
           required
           errors={state?.fieldErrors?.password ?? []}
-          minLength={8}
+          minLength={PASSWORD_MIN_LENGTH}
+          maxLength={PASSWORD_MAX_LENGTH}
         />
         <Input
           name="confirmPassword"
@@ -45,6 +54,8 @@ export default function CreateAccount() {
           placeholder="confirm password"
           required
           errors={state?.fieldErrors?.confirmPassword ?? []}
+          minLength={PASSWORD_MIN_LENGTH}
+          maxLength={PASSWORD_MAX_LENGTH}
         />
         <Button title="Create Account" />
       </form>

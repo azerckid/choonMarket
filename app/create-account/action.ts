@@ -1,9 +1,15 @@
 "use server";
 import { z } from "zod";
-
-const passwordRegex = new RegExp(
-  "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
-)
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_REGEX,
+  PASSWORD_REGEX,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_ERROR_MESSAGE,
+  USERNAME_ERROR_MESSAGE
+} from "@/lib/constants";
 
 const checkUsername = (username: string) => {
   const forbiddenWords = ["sex", "fuck", "porn", "nsfw", "xxx"];
@@ -20,17 +26,19 @@ const formSchema = z
         invalid_type_error: "username must be a string",
         required_error: "where is my username?"
       })
-      .min(5, "Username must be at least 5 characters")
-      .max(10, "Username must be less than 10 characters")
+      .min(USERNAME_MIN_LENGTH, "Username must be at least 5 characters")
+      .max(USERNAME_MAX_LENGTH, "Username must be less than 10 characters")
       .trim()
+      .regex(USERNAME_REGEX, USERNAME_ERROR_MESSAGE)
       .transform((username) => `${username}`)
       .refine(checkUsername, "that word not allowed"),
     email: z.string().email("Invalid email address").trim().toLowerCase(),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
+      .min(PASSWORD_MIN_LENGTH, "Password must be at least 4 characters")
+      .max(PASSWORD_MAX_LENGTH, "Password must be less than 16 characters")
       .trim()
-      .regex(passwordRegex, "Password must contain at least one capital letter, one lowercase letter, one number, and one special character (!@#$%^&*)"),
+      .regex(PASSWORD_REGEX, PASSWORD_ERROR_MESSAGE),
     confirmPassword: z.string().trim(),
   })
   .refine(checkPassword, {
