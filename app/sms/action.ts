@@ -1,28 +1,56 @@
 "use server"
 
 import { z } from "zod";
+import validator from "validator"
 import { PHONE_ERROR_MESSAGE } from "@/lib/constants";
+import { redirect } from "next/navigation";
 
-const smsSchema = z.object({
-    phone: z.string().min(10).max(11).regex(/^[0-9]+$/, PHONE_ERROR_MESSAGE),
-    code: z.string().length(6).regex(/^[0-9]+$/, "Invalid verification code"),
-});
+const phoneSchema = z.string().trim().refine((phone) => validator.isMobilePhone(phone, "ko-KR"), PHONE_ERROR_MESSAGE)
+const codeSchema = z.coerce.number().int().min(100000).max(999999)
 
-export async function smsVerification(prevState: any, formData: FormData) {
-    const data = {
-        phone: formData.get("phone"),
-        code: formData.get("code"),
+interface ActionState {
+    token: boolean;
+    error?: {
+        fieldErrors: {
+            phone?: string[];
+            token?: string[];
+        };
     };
-    try {
-        const result = smsSchema.safeParse(data);
+}
+
+export async function smsLogin(prevState: ActionState, formData: FormData) {
+    const phone = formData.get("phone")
+    const token = formData.get("token")
+
+    console.log(prevState)
+    console.log(phone)
+    if (!prevState.token) {
+        const result = phoneSchema.safeParse(phone);
         if (!result.success) {
-            return result.error.flatten();
+            return {
+                token: false,
+                error: {
+                    fieldErrors: {
+                        phone: [result.error.errors[0].message]
+                    }
+                }
+            };
+        } else {
+            return { token: true }
         }
-        return { success: true };
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return { success: false, fieldErrors: error.flatten().fieldErrors };
+    } else {
+        const result = codeSchema.safeParse(token);
+        if (!result.success) {
+            return {
+                token: true,
+                error: {
+                    fieldErrors: {
+                        token: [result.error.errors[0].message]
+                    }
+                }
+            }
+        } else {
+            redirect("/")
         }
-        return { success: false, message: "Verification failed" };
     }
 }

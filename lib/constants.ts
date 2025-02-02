@@ -11,3 +11,6 @@ export const EMAIL_MAX_LENGTH = 50;
 export const PASSWORD_ERROR_MESSAGE = "Password must contain at least one capital letter, one lowercase letter, one number, and one special character (!@#$%^&*)";
 export const EMAIL_ERROR_MESSAGE = "Invalid email address";
 export const USERNAME_ERROR_MESSAGE = "Username must contain only letters, numbers, and underscores";
+export const PHONE_MIN_LENGTH = 10;
+export const PHONE_MAX_LENGTH = 11;
+export const PHONE_ERROR_MESSAGE = "Invalid phone number format";
