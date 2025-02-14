@@ -10,14 +10,35 @@ import {
   PASSWORD_ERROR_MESSAGE,
   USERNAME_ERROR_MESSAGE
 } from "@/lib/constants";
+import db from "@/lib/db";
+import bcrypt from "bcrypt";
 
 const checkUsername = (username: string) => {
   const forbiddenWords = ["sex", "fuck", "porn", "nsfw", "xxx"];
   return !forbiddenWords.some(word => username.toLowerCase().includes(word));
 }
-const checkPassword = ({ password, confirmPassword }: { password: string, confirmPassword: string }) => {
-  return password === confirmPassword;
+const checkUniqueUsername = async (username: string) => {
+  const user = await db.user.findUnique({
+    where: { username },
+    select: {
+      id: true,
+    }
+  })
+  return !Boolean(user);
 }
+const checkUniqueEmail = async (email: string) => {
+  const user = await db.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+    }
+  })
+  return !Boolean(user);
+}
+const checkPassword = (data: { password: string, confirmPassword: string }) => {
+  return data.password === data.confirmPassword;
+}
+
 
 const formSchema = z
   .object({
@@ -31,8 +52,10 @@ const formSchema = z
       .trim()
       .regex(USERNAME_REGEX, USERNAME_ERROR_MESSAGE)
       .transform((username) => `${username}`)
-      .refine(checkUsername, "that word not allowed"),
-    email: z.string().email("Invalid email address").trim().toLowerCase(),
+      .refine(checkUsername, "that word not allowed")
+      .refine(checkUniqueUsername, "Username already exists"),
+    email: z.string().email("Invalid email address").trim().toLowerCase()
+      .refine(checkUniqueEmail, "Email already exists"),
     password: z
       .string()
       .min(PASSWORD_MIN_LENGTH, "Password must be at least 4 characters")
@@ -48,17 +71,32 @@ const formSchema = z
 
 export const createAccount = async (prevState: any, formData: FormData) => {
   const data = {
-    username: formData.get("username"),
-    email: formData.get("email"),
-    password: formData.get("password"),
-    confirmPassword: formData.get("confirmPassword"),
+    username: formData.get("username")?.toString(),
+    email: formData.get("email")?.toString(),
+    password: formData.get("password")?.toString(),
+    confirmPassword: formData.get("confirmPassword")?.toString(),
   };
   try {
-    const result = formSchema.safeParse(data);
+    const result = await formSchema.safeParseAsync(data);
+
     if (!result.success) {
       return result.error.flatten();
     } else {
-      console.log(result.data)
+      // TODO: hash password
+      if (!data.password) throw new Error("Password is required");
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+
+      // TODO: save user to db
+      if (!data.username || !data.email) throw new Error("Required fields missing");
+      const newUser = await db.user.create({
+        data: {
+          username: result.data.username,
+          email: result.data.email,
+          password: hashedPassword
+        }
+      })
+      // TODO: log the user in
+      // TODO: redirect to /verify-phone
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
