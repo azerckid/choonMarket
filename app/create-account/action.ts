@@ -85,7 +85,7 @@ export const createAccount = async (prevState: any, formData: FormData) => {
       // TODO: hash password
       if (!data.password) throw new Error("Password is required");
       const hashedPassword = await bcrypt.hash(data.password, 10);
-
+      console.log(hashedPassword);
       // TODO: save user to db
       if (!data.username || !data.email) throw new Error("Required fields missing");
       const newUser = await db.user.create({
@@ -93,9 +93,13 @@ export const createAccount = async (prevState: any, formData: FormData) => {
           username: result.data.username,
           email: result.data.email,
           password: hashedPassword
+        },
+        select: {
+          id: true,
         }
       })
       // TODO: log the user in
+      console.log(newUser);
       // TODO: redirect to /verify-phone
     }
   } catch (error) {
