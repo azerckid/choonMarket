@@ -12,6 +12,10 @@ import {
 } from "@/lib/constants";
 import db from "@/lib/db";
 import bcrypt from "bcrypt";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 
 const checkUsername = (username: string) => {
   const forbiddenWords = ["sex", "fuck", "porn", "nsfw", "xxx"];
@@ -38,7 +42,6 @@ const checkUniqueEmail = async (email: string) => {
 const checkPassword = (data: { password: string, confirmPassword: string }) => {
   return data.password === data.confirmPassword;
 }
-
 
 const formSchema = z
   .object({
@@ -69,7 +72,21 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-export const createAccount = async (prevState: any, formData: FormData) => {
+interface ActionState {
+  success?: boolean;
+  fieldErrors?: {
+    username?: string[];
+    email?: string[];
+    password?: string[];
+    confirmPassword?: string[];
+  };
+  message?: string;
+}
+
+export const createAccount = async (
+  state: ActionState | null,
+  formData: FormData
+): Promise<ActionState | null> => {
   const data = {
     username: formData.get("username")?.toString(),
     email: formData.get("email")?.toString(),
@@ -80,7 +97,7 @@ export const createAccount = async (prevState: any, formData: FormData) => {
     const result = await formSchema.safeParseAsync(data);
 
     if (!result.success) {
-      return result.error.flatten();
+      return { success: false, fieldErrors: result.error.flatten().fieldErrors };
     } else {
       // TODO: hash password
       if (!data.password) throw new Error("Password is required");
@@ -99,8 +116,16 @@ export const createAccount = async (prevState: any, formData: FormData) => {
         }
       })
       // TODO: log the user in
-      console.log(newUser);
-      // TODO: redirect to /verify-phone
+      const cookie = await getIronSession(await cookies(), {
+        cookieName: "cookie-name",
+        password: process.env.SESSION_SECRET!,
+      });
+      // @ts-ignore
+      cookie.id = newUser.id;
+      await cookie.save();
+      console.log("cookie", cookie);
+      redirect("/profile");
+      return { success: true };
     }
   } catch (error) {
     if (error instanceof z.ZodError) {

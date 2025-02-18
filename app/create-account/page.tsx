@@ -10,9 +10,23 @@ import { EMAIL_MIN_LENGTH } from "@/lib/constants";
 import { EMAIL_MAX_LENGTH } from "@/lib/constants";
 import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 import { PASSWORD_MAX_LENGTH } from "@/lib/constants";
+import { useState, useEffect } from "react";
+import { redirect } from "next/navigation";
 
 export default function CreateAccount() {
   const [state, action] = useActionState(createAccount, null);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (state?.success) {
+      setIsSuccess(true);
+    }
+  }, [state]);
+
+  if (isSuccess) {
+    redirect("/profile");
+  }
+
   console.log("state", state);
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
