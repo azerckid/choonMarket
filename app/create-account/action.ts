@@ -12,10 +12,7 @@ import {
 } from "@/lib/constants";
 import db from "@/lib/db";
 import bcrypt from "bcrypt";
-import { getIronSession } from "iron-session";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-
+import { getSession } from "@/lib/session";
 
 const checkUsername = (username: string) => {
   const forbiddenWords = ["sex", "fuck", "porn", "nsfw", "xxx"];
@@ -116,15 +113,10 @@ export const createAccount = async (
         }
       })
       // TODO: log the user in
-      const cookie = await getIronSession(await cookies(), {
-        cookieName: "cookie-name",
-        password: process.env.SESSION_SECRET!,
-      });
-      // @ts-ignore
-      cookie.id = newUser.id;
-      await cookie.save();
-      console.log("cookie", cookie);
-      redirect("/profile");
+      const session = await getSession();
+      session.id = newUser.id;
+      await session.save();
+      console.log("session", session);
       return { success: true };
     }
   } catch (error) {
