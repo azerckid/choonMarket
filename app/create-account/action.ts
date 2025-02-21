@@ -67,6 +67,25 @@ const formSchema = z
   .refine(checkPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
+  })
+  .superRefine(async (data, ctx) => {
+    const user = await db.user.findUnique({
+      where: {
+        username: data.username,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (user) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Username already exists",
+        path: ["username"],
+        fatal: true,
+      });
+      return z.NEVER;
+    }
   });
 
 interface ActionState {
