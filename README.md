@@ -15,6 +15,7 @@ npx prisma migrate dev
 ```bash
 npx prisma studio
 
+
 ```
 
 
