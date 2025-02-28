@@ -6,13 +6,21 @@ export default async function middleware(request: NextRequest) {
     const session = await getSession();
     // console.log(request.cookies.getAll());
     // console.log(cookies());
-    console.log(session);
+    // console.log(session);
+    const pathname = request.nextUrl.pathname;
 
-    if (request.nextUrl.pathname === "/profile") {
+    if (pathname === "/profile") {
         return NextResponse.redirect(new URL("/", request.url));
     }
+
+    if (pathname === "/") {
+        const response = NextResponse.next();
+        response.cookies.set("middleware-cookie", "true");
+        return response;
+    }
+
 }
 
 export const config = {
-    matcher: "/",
+    matcher: ["/", "/profile", "/login", "/create-account", "/user/:path*"],
 };
