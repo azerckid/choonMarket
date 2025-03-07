@@ -16,4 +16,4 @@ npx prisma migrate dev
 npx prisma studio
 ```
 
-
+## prisma migrate
