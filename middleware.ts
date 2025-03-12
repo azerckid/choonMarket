@@ -6,7 +6,7 @@ interface PublicOnlyUrls {
 }
 
 const publicOnlyUrls: PublicOnlyUrls = {
-    "/login": true,
+    // "/login": true,
     "/sms": true,
     "/create-account": true,
     "/": true,
@@ -17,7 +17,7 @@ const publicOnlyUrls: PublicOnlyUrls = {
 export default async function middleware(request: NextRequest) {
     const session = await getSession();
     const exists = publicOnlyUrls[request.nextUrl.pathname];
-    if (!session.id) {
+    if (!session.user?.id) {
         if (!exists) {
             return NextResponse.redirect(new URL("/", request.url));
         }

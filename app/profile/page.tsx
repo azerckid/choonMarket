@@ -6,11 +6,11 @@ import { logout } from "./action";
 
 export default async function Profile() {
     const session = await getSession();
-    if (!session.id) {
+    if (!session.user?.id) {
         notFound();
     }
     const user = await db.user.findUnique({
-        where: { id: session.id },
+        where: { id: session.user?.id },
         select: {
             username: true,
             email: true,
