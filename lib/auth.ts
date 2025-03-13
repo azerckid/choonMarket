@@ -1,7 +1,7 @@
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 
-export async function authenticateUser(userId: string) {
+export default async function authenticateUser(userId: string) {
     // 사용자 확인
     const user = await db.user.findUnique({
         where: { id: parseInt(userId) },

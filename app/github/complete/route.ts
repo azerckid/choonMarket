@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
+import authenticateUser from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
     const code = request.nextUrl.searchParams.get("code");
@@ -38,6 +39,17 @@ export async function GET(request: NextRequest) {
             status: 400,
         });
     }
+
+    // Add request to get user's email
+    const emailResponse = await fetch("https://api.github.com/user/emails", {
+        headers: {
+            Authorization: `Bearer ${accessTokenData.access_token}`,
+        },
+        cache: "no-cache",
+    });
+    const emailData = await emailResponse.json();
+    const primaryEmail = emailData.find((email: any) => email.primary)?.email || emailData[0]?.email;
+
     const { id, login, avatar_url } = userData;
 
     const user = await db.user.findUnique({
@@ -53,19 +65,28 @@ export async function GET(request: NextRequest) {
         await session.save();
         return redirect("/profile");
     }
+
+    // to make distinguish between githubs user and normal user
     const newUser = await db.user.create({
         data: {
             github_id: id + "",
             username: `github_${login}`,
             avatar: avatar_url,
+            email: primaryEmail,
         },
         select: {
             id: true,
         },
     });
 
-    const session = await getSession();
-    session.user = { id: newUser.id };
-    await session.save();
+    // to make login function
+    authenticateUser(newUser.id + "");
     return redirect("/profile");
+
+    //todo: 
+
+    // to make distinguish between githubs user and normal user
+    // to make getting email from github
+    // to make seperating each fetch request
+
 }
