@@ -1,92 +1,98 @@
 import { notFound, redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import db from "@/lib/db";
-import { getSession } from "@/lib/session";
 import authenticateUser from "@/lib/auth";
 
-export async function GET(request: NextRequest) {
-    const code = request.nextUrl.searchParams.get("code");
-    if (!code) {
-        return notFound();
-    }
+async function getGithubAccessToken(code: string) {
     const accessTokenParams = new URLSearchParams({
         client_id: process.env.GITHUB_CLIENT_ID!,
         client_secret: process.env.GITHUB_CLIENT_SECRET!,
         code,
     }).toString();
     const accessTokenURL = `https://github.com/login/oauth/access_token?${accessTokenParams}`;
-    const accessTokenResponse = await fetch(accessTokenURL, {
+    const response = await fetch(accessTokenURL, {
         method: "POST",
         headers: {
             Accept: "application/json",
         },
     });
-    const accessTokenData = await accessTokenResponse.json();
-    if ("error" in accessTokenData) {
-        return new Response(null, {
-            status: 400,
-        });
+    const data = await response.json();
+    if ("error" in data) {
+        throw new Error("Failed to get access token");
     }
-    const userResponse = await fetch("https://api.github.com/user", {
+    return data.access_token;
+}
+
+async function getGithubUserData(accessToken: string) {
+    const response = await fetch("https://api.github.com/user", {
         headers: {
-            Authorization: `Bearer ${accessTokenData.access_token}`,
+            Authorization: `Bearer ${accessToken}`,
         },
         cache: "no-cache",
     });
-    const userData = await userResponse.json();
-    if ("error" in userData) {
-        return new Response(null, {
-            status: 400,
-        });
+    const data = await response.json();
+    if ("error" in data) {
+        throw new Error("Failed to get user data");
     }
+    return data;
+}
 
-    // Add request to get user's email
-    const emailResponse = await fetch("https://api.github.com/user/emails", {
+async function getGithubUserEmail(accessToken: string) {
+    const response = await fetch("https://api.github.com/user/emails", {
         headers: {
-            Authorization: `Bearer ${accessTokenData.access_token}`,
+            Authorization: `Bearer ${accessToken}`,
         },
         cache: "no-cache",
     });
-    const emailData = await emailResponse.json();
-    const primaryEmail = emailData.find((email: any) => email.primary)?.email || emailData[0]?.email;
+    const data = await response.json();
+    return data.find((email: any) => email.primary)?.email || data[0]?.email;
+}
 
-    const { id, login, avatar_url } = userData;
+export async function GET(request: NextRequest) {
+    try {
+        const code = request.nextUrl.searchParams.get("code");
+        if (!code) {
+            return notFound();
+        }
 
-    const user = await db.user.findUnique({
-        where: { github_id: id + "" },
-        select: {
-            id: true,
-        },
-    });
+        const accessToken = await getGithubAccessToken(code);
+        const userData = await getGithubUserData(accessToken);
+        const primaryEmail = await getGithubUserEmail(accessToken);
 
-    if (user) {
-        const session = await getSession();
-        session.user = { id: user.id };
-        await session.save();
+        const { id, login, avatar_url } = userData;
+
+        const user = await db.user.findUnique({
+            where: { github_id: id + "" },
+            select: {
+                id: true,
+            },
+        });
+
+        if (user) {
+            authenticateUser(user.id + "");
+            return redirect("/profile");
+        }
+
+        const newUser = await db.user.create({
+            data: {
+                github_id: id + "",
+                username: `github_${login}`,
+                avatar: avatar_url,
+                email: primaryEmail,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        authenticateUser(newUser.id + "");
         return redirect("/profile");
+    } catch (error: any) {
+        // NEXT_REDIRECT 에러는 정상적인 리다이렉션이므로 그대로 던집니다
+        if (error?.digest?.startsWith('NEXT_REDIRECT')) {
+            throw error;
+        }
+        console.error("GitHub OAuth Error:", error);
+        return new Response(null, { status: 400 });
     }
-
-    // to make distinguish between githubs user and normal user
-    const newUser = await db.user.create({
-        data: {
-            github_id: id + "",
-            username: `github_${login}`,
-            avatar: avatar_url,
-            email: primaryEmail,
-        },
-        select: {
-            id: true,
-        },
-    });
-
-    // to make login function
-    authenticateUser(newUser.id + "");
-    return redirect("/profile");
-
-    //todo: 
-
-    // to make distinguish between githubs user and normal user
-    // to make getting email from github
-    // to make seperating each fetch request
-
 }
