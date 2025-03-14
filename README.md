@@ -8,8 +8,13 @@ npm run dev
 
 ```bash
 npx prisma generate
+```
+
+schema를 수정한 후에
+```bash
 npx prisma migrate dev
 ```
+
 ## prisma studio
 
 ```bash
