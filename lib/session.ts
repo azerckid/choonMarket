@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 interface SessionContent {
     user?: {
         id: number;
+        username?: string;
+        email?: string;
     };
 }
 
@@ -13,4 +15,14 @@ export const getSession = async () => {
         password: process.env.SESSION_SECRET!,
     });
     return cookie;
+}
+
+declare module "next/session" {
+    interface SessionData {
+        user?: {
+            id: number;
+            username?: string;
+            email?: string;
+        }
+    }
 }   

@@ -1,23 +1,31 @@
 import { getSession } from "@/lib/session";
-import { redirect, notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import db from "@/lib/db";
 import Button from "@/components/button";
 import { logout } from "./action";
 
 export default async function Profile() {
     const session = await getSession();
-    if (!session.user?.id) {
-        notFound();
+
+    // 세션이 없거나 사용자 ID가 없으면 로그인 페이지로 리다이렉트
+    if (!session?.user?.id) {
+        redirect("/login");
     }
+
     const user = await db.user.findUnique({
-        where: { id: session.user?.id },
+        where: {
+            id: session.user.id
+        },
         select: {
+            id: true,  // ID도 함께 조회
             username: true,
             email: true,
             phone: true,
             avatar: true,
         }
     });
+
+    // 사용자 데이터가 없으면 로그인 페이지로 리다이렉트
     if (!user) {
         redirect("/login");
     }
@@ -29,7 +37,11 @@ export default async function Profile() {
             </div>
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
-                    <img src={user.avatar || "/default-avatar.png"} alt="avatar" className="w-16 h-16 rounded-full" />
+                    <img
+                        src={user.avatar || "/default-avatar.png"}
+                        alt={`${user.username}'s avatar`}
+                        className="w-16 h-16 rounded-full"
+                    />
                     <p><span className="font-medium">Email:</span> {user.email}</p>
                     <p><span className="font-medium">Phone:</span> {user.phone || "Not set"}</p>
                 </div>

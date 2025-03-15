@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import db from "@/lib/db";
 import authenticateUser from "@/lib/auth";
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     try {
         const code = request.nextUrl.searchParams.get("code");
         if (!code) {
-            return notFound();
+            return new Response("Authorization code not found", { status: 400 });
         }
 
         const accessToken = await getGithubAccessToken(code);
@@ -61,38 +61,31 @@ export async function GET(request: NextRequest) {
 
         const { id, login, avatar_url } = userData;
 
-        const user = await db.user.findUnique({
+        let user = await db.user.findUnique({
             where: { github_id: id + "" },
-            select: {
-                id: true,
-            },
+            select: { id: true },
         });
 
-        if (user) {
-            authenticateUser(user.id + "");
-            return redirect("/profile");
+        if (!user) {
+            user = await db.user.create({
+                data: {
+                    github_id: id + "",
+                    username: `github_${login}`,
+                    avatar: avatar_url,
+                    email: primaryEmail,
+                },
+                select: { id: true },
+            });
         }
 
-        const newUser = await db.user.create({
-            data: {
-                github_id: id + "",
-                username: `github_${login}`,
-                avatar: avatar_url,
-                email: primaryEmail,
-            },
-            select: {
-                id: true,
-            },
+        await authenticateUser(user.id + "");
+
+        return new Response(null, {
+            status: 302,
+            headers: { Location: "/profile" }
         });
-
-        authenticateUser(newUser.id + "");
-        return redirect("/profile");
-    } catch (error: any) {
-        // NEXT_REDIRECT 에러는 정상적인 리다이렉션이므로 그대로 던집니다
-        if (error?.digest?.startsWith('NEXT_REDIRECT')) {
-            throw error;
-        }
+    } catch (error) {
         console.error("GitHub OAuth Error:", error);
-        return new Response(null, { status: 400 });
+        return new Response("Authentication failed", { status: 500 });
     }
 }
