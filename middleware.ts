@@ -6,17 +6,22 @@ interface PublicOnlyUrls {
 }
 
 const publicOnlyUrls: PublicOnlyUrls = {
-    // "/login": true,
+    "/": true,
+    "/login": true,
     "/sms": true,
     "/create-account": true,
-    "/": true,
     "/github/start": true,
     "/github/complete": true,
 }
 
 export default async function middleware(request: NextRequest) {
     const session = await getSession();
-    // const exists = publicOnlyUrls[request.nextUrl.pathname];
+
+    const exists = publicOnlyUrls[request.nextUrl.pathname];
+
+    if (session?.user?.id && exists) {
+        return NextResponse.redirect(new URL("/products", request.url));
+    }
     // if (!session.user?.id) {
     //     if (!exists) {
     //         return NextResponse.redirect(new URL("/", request.url));
@@ -26,6 +31,8 @@ export default async function middleware(request: NextRequest) {
     //         return NextResponse.redirect(new URL("/products", request.url));
     //     }
     // }
+
+    return NextResponse.next();
 }
 
 export const config = {
