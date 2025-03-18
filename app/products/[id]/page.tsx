@@ -1,7 +1,7 @@
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { formatToWon, formatUsername } from "@/lib/utils";
-import { UserIcon } from "@heroicons/react/24/solid";
+import { UserIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -42,12 +42,16 @@ export default async function ProductDetail({ params }: { params: { id: string }
     if (!product) {
         return notFound();
     }
+    console.log(product);
     const isOwner = await getIsOwner(product.userId);
 
     return (
         <div>
-            <div className="p-3 text-lg text-neutral-400 z-10">
-                Product #{id}
+            <div className="p-3 text-lg text-neutral-400 z-10 flex items-center gap-2">
+                <Link href="/products" className="hover:text-white">
+                    <ArrowLeftIcon className="w-6 h-6" />
+                </Link>
+                <span>Product #{id}</span>
             </div>
             <div className="relative w-full aspect-square">
                 <Image
