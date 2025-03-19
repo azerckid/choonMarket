@@ -22,6 +22,8 @@ export default function ProductList({ initialProducts }: ProductListProps) {
                 entries: IntersectionObserverEntry[],
                 observer: IntersectionObserver
             ) => {
+                console.log("entries", entries);
+                console.log("observer", observer);
                 const element = entries[0];
                 if (element.isIntersecting && trigger.current) {
                     observer.unobserve(trigger.current);
@@ -43,7 +45,6 @@ export default function ProductList({ initialProducts }: ProductListProps) {
         if (trigger.current) {
             observer.observe(trigger.current);
         }
-
         return () => {
             observer.disconnect();
         };
@@ -58,7 +59,7 @@ export default function ProductList({ initialProducts }: ProductListProps) {
                 <span
                     ref={trigger}
                     style={{
-                        marginTop: `${page + 1 * 50}vh`,
+                        marginTop: `${(page + 1) * 50}vh`,
                     }}
                     className="mb-96 text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-90 active:scale-95"
                 >
