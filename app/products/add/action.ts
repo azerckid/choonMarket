@@ -1,15 +1,27 @@
 "use server";
 
+type FormState = {
+    fieldErrors?: {
+        title?: string[];
+        price?: string[];
+        description?: string[];
+    };
+} | null;
+
 import { productSchema } from "./zodSchema";
 import fs from "fs/promises";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
-export async function uploadProduct(formData: FormData) {
+export async function uploadProduct(state: FormState, formData: FormData): Promise<FormState> {
     const session = await getSession();
     if (!session?.user?.id) {
-        throw new Error("로그인이 필요합니다.");
+        return {
+            fieldErrors: {
+                title: ["로그인이 필요합니다."]
+            }
+        };
     }
 
     const data = {
@@ -27,7 +39,9 @@ export async function uploadProduct(formData: FormData) {
 
     const result = await productSchema.safeParse(data);
     if (!result.success) {
-        throw new Error("입력값이 올바르지 않습니다.");
+        return {
+            fieldErrors: result.error.flatten().fieldErrors
+        };
     }
 
     await db.product.create({
