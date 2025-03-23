@@ -4,7 +4,7 @@ import Button from "@/components/button";
 import Input from "@/components/input";
 import { PhotoIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { uploadProduct } from "./action";
+import { getUploadUrl, uploadProduct } from "./action";
 import { useFormState } from "react-dom";
 
 type FormState = {
@@ -17,21 +17,73 @@ type FormState = {
 
 export default function AddProduct() {
     const [preview, setPreview] = useState("");
-    const [state, action] = useFormState<FormState, FormData>(uploadProduct, null);
+    const [photoId, setImageId] = useState("");
+    const [uploadUrl, setUploadUrl] = useState("");
 
-
-    const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
-        // Check file size (2MB = 2 * 1024 * 1024 bytes)
         if (file.size > 2 * 1024 * 1024) {
             alert("이미지 크기는 2MB를 초과할 수 없습니다.");
             event.target.value = ""; // Reset the input
             return;
         }
         setPreview(URL.createObjectURL(file));
+        const { success, result } = await getUploadUrl();
+        if (!success) {
+            alert("이미지 업로드에 실패했습니다.");
+            return;
+        }
+        const { id, uploadURL } = result;
+        setUploadUrl(uploadURL);
+        setImageId(id);
     };
 
+
+    const interceptAction = async (state: FormState, formData: FormData): Promise<FormState> => {
+        const file = formData.get("photo");
+        if (!file) {
+            return {
+                fieldErrors: {
+                    title: ["이미지를 선택해주세요."]
+                }
+            };
+        }
+        const cloudflareForm = new FormData();
+        cloudflareForm.append("file", file);
+        try {
+            const response = await fetch(uploadUrl, {
+                method: "post",
+                body: cloudflareForm,
+            });
+            if (response.status !== 200) {
+                return {
+                    fieldErrors: {
+                        title: ["이미지 업로드에 실패했습니다."]
+                    }
+                };
+            }
+            const { result } = await response.json();
+            if (!result || !result.variants || !result.variants[0]) {
+                return {
+                    fieldErrors: {
+                        title: ["이미지 업로드 응답이 올바르지 않습니다."]
+                    }
+                };
+            }
+            const photoUrl = `https://imagedelivery.net/qElPWuf6dh3XwlbK50HaCg/${photoId}`;
+            formData.set("photo", photoUrl);
+            return uploadProduct(state, formData);
+        } catch (error) {
+            return {
+                fieldErrors: {
+                    title: ["이미지 업로드 중 오류가 발생했습니다."]
+                }
+            };
+        }
+    }
+
+    const [state, action] = useFormState<FormState, FormData>(interceptAction, null);
     return (
         <div>
             <form

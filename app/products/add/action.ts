@@ -9,7 +9,6 @@ type FormState = {
 } | null;
 
 import { productSchema } from "./zodSchema";
-import fs from "fs/promises";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -23,27 +22,18 @@ export async function uploadProduct(state: FormState, formData: FormData): Promi
             }
         };
     }
-
     const data = {
         photo: formData.get("photo"),
         title: formData.get("title"),
         price: formData.get("price"),
         description: formData.get("description"),
     };
-
-    if (data.photo instanceof File) {
-        const photoData = await data.photo.arrayBuffer();
-        await fs.appendFile(`./public/${data.photo.name}`, Buffer.from(photoData));
-        data.photo = `/${data.photo.name}`;
-    }
-
     const result = await productSchema.safeParse(data);
     if (!result.success) {
         return {
             fieldErrors: result.error.flatten().fieldErrors
         };
     }
-
     await db.product.create({
         data: {
             title: result.data.title,
@@ -57,6 +47,16 @@ export async function uploadProduct(state: FormState, formData: FormData): Promi
             }
         },
     });
-
     redirect("/products");
+}
+
+export async function getUploadUrl() {
+    const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v2/direct_upload`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
+        }
+    });
+    const data = await response.json();
+    return data;
 }

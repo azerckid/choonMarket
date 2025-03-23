@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import db from "@/lib/db";
 import Button from "@/components/button";
 import { logout } from "./action";
+import { formatUsername } from "@/lib/utils";
 
 export default async function Profile() {
     const session = await getSession();
@@ -33,7 +34,7 @@ export default async function Profile() {
     return (
         <div className="flex flex-col gap-10 py-8 px-6">
             <div className="flex flex-col gap-2 *:font-medium">
-                <h2 className="text-xl">Welcome, {user.username}!</h2>
+                <h2 className="text-xl">Welcome, {formatUsername(user.username)}!</h2>
             </div>
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
