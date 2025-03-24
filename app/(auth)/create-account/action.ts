@@ -133,7 +133,7 @@ export const createAccount = async (
       })
       // TODO: log the user in
       const session = await getSession();
-      session.id = newUser.id;
+      session.user = { id: newUser.id };
       await session.save();
       console.log("session", session);
       return { success: true };
