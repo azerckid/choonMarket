@@ -13,7 +13,7 @@ import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
-export async function uploadProduct(state: FormState, formData: FormData): Promise<FormState> {
+export async function uploadProduct(formData: FormData) {
     const session = await getSession();
     if (!session?.user?.id) {
         return {
