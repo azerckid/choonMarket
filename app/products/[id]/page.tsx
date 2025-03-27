@@ -46,9 +46,9 @@ export default async function ProductDetail({ params }: { params: { id: string }
     const isOwner = await getIsOwner(product.userId);
 
     return (
-        <div>
+        <div className="mx-auto max-w-screen-md flex flex-col gap-5 justify-center">
             <div className="p-3 text-lg text-neutral-400 z-10 flex items-center gap-2">
-                <Link href="/products" className="hover:text-white">
+                <Link href="/home" className="hover:text-white">
                     <ArrowLeftIcon className="w-6 h-6" />
                 </Link>
                 <span>Product #{id}</span>
@@ -85,15 +85,10 @@ export default async function ProductDetail({ params }: { params: { id: string }
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
             </div>
-            <div className="fixed w-full bottom-0 left-0 p-5 pb-5 bg-neutral-800 flex justify-between items-center">
+            <div className="flex justify-between items-center p-5 ">
                 <span className="font-semibold text-xl">
-                    {formatToWon(product.price)}원
+                    price : {formatToWon(product.price)}원
                 </span>
-                {isOwner ? (
-                    <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
-                        Delete product
-                    </button>
-                ) : null}
                 <Link
                     className="bg-orange-500 px-5 py-2.5 rounded-md text-white font-semibold"
                     href={``}
@@ -101,6 +96,11 @@ export default async function ProductDetail({ params }: { params: { id: string }
                     채팅하기
                 </Link>
             </div>
+            {isOwner ? (<div className="flex justify-center items-center p-5">
+                <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
+                    Delete product
+                </button>
+            </div>) : null}
         </div>
     );
 }

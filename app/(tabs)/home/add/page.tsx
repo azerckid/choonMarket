@@ -119,7 +119,7 @@ export default function AddProduct() {
                             onClick={(e) => {
                                 e.preventDefault();
                                 setPreview("");
-                                router.push("/products");
+                                router.push("/home");
                             }}
                             className="w-full h-full bg-black/50 text-white"
                         >

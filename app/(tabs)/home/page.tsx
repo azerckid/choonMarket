@@ -27,9 +27,10 @@ export default async function Products() {
     const initialProducts = await getInitialProducts();
     return (
         <div>
+            <Link href="/home/recent" className="text-blue-500 text-lg font-semibold">RECENT</Link>
             <ProductList initialProducts={initialProducts} />
             <Link
-                href="/products/add"
+                href="/home/add"
                 className="bg-blue-500 text-white flex items-center justify-center rounded-full size-16 fixed bottom-24 right-8 transition-colors hover:bg-pink-400"
             >
                 <PlusIcon className="size-10" />
