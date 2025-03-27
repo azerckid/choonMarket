@@ -78,14 +78,17 @@ export default async function ProductDetail({ params }: { params: { id: string }
                     <h3>{formatUsername(product.user.username)}</h3>
                 </div>
             </div>
-            <div className="p-5 pb-32">
+            <div className="p-5 pb-10">
                 <h1 className="text-2xl font-semibold">{product.title}</h1>
                 <p>{product.description}</p>
                 <p className="mt-4 text-neutral-400">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
             </div>
-            <div className="flex justify-between items-center p-5 ">
+            <div className="flex justify-between items-center p-5">
                 <span className="font-semibold text-xl">
                     price : {formatToWon(product.price)}원
                 </span>
@@ -96,7 +99,8 @@ export default async function ProductDetail({ params }: { params: { id: string }
                     채팅하기
                 </Link>
             </div>
-            {isOwner ? (<div className="flex justify-center items-center p-5">
+            {isOwner ? (<div className="flex flex-col gap-2 justify-center items-center p-5">
+                <p className="text-neutral-400">* if you are the owner, you can delete the product.</p>
                 <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
                     Delete product
                 </button>
