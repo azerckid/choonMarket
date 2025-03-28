@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Karrot Market",
-    default: "Karrot Market",
+    template: "%s | Blue Market",
+    default: "Blue Market",
   },
   description: "Sell and buy all the things!",
 };

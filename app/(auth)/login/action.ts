@@ -65,7 +65,9 @@ export async function login(prevState: ActionState | null, formData: FormData): 
                 return { success: false, fieldErrors: { password: ["Invalid password"] } };
             }
             const session = await getSession();
-            session.id = user.id;
+            session.user = {
+                id: user.id,
+            }
             await session.save();
             return { success: true };
         }
