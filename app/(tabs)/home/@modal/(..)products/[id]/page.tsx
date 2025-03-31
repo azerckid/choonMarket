@@ -1,7 +1,9 @@
+import Image from "next/image";
 import { getProduct } from "./action";
 import CloseButton from "@/components/close-button";
-import Image from "next/image";
 import GobackButton from "@/components/goback-button";
+import ViewDetailsButton from "@/components/view-details-button";
+
 interface Product {
     id: number;
     title: string;
@@ -26,13 +28,11 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
     return (
         <div className="absolute w-full h-full z-50 flex items-center justify-center bg-black left-0 top-0">
             <div className="max-w-screen-sm h-1/2  flex flex-col gap-4 justify-center w-full">
-                <div className="flex flex-row gap-2 justify-between mb-4 h-16 bg-orange-400">
+                <div className="flex flex-row gap-2 justify-between mb-4 h-16">
                     <div className="relative flex flex-row items-center">
                         <GobackButton id={id} />
                     </div>
-                    <div className="relative flex flex-row items-center">
-                        <CloseButton id={id} />
-                    </div>
+
                 </div>
                 <div className="flex flex-row gap-10 justify-center items-center">
                     <div className="flex flex-col gap-2">
@@ -60,6 +60,9 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
                             }
                         </span>
                         <span className="text-neutral-500">{product?.price.toLocaleString()} 원</span>
+                        <div className="relative flex flex-row items-center">
+                            <ViewDetailsButton id={id} />
+                        </div>
                     </div>
                 </div>
                 <div>
