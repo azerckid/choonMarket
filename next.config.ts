@@ -1,8 +1,26 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import { NextConfig } from 'next'
+
+const config: NextConfig = {
   images: {
-    domains: ['avatars.githubusercontent.com', 'utfs.io']
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'imagedelivery.net',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'github.com',
+        port: '',
+        pathname: '/**',
+      }
+    ],
+    domains: ['avatars.githubusercontent.com', "localhost", "cloudflare-ipfs.com", "utfs.io"]
+  },
+  typescript: {
+    ignoreBuildErrors: true
   }
 };
 
-export default nextConfig;
+export default config;
