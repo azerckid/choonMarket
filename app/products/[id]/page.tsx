@@ -6,6 +6,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+    const { id } = await params;
+    const product = await getProduct(Number(id));
+    return {
+        title: product?.title,
+        description: product?.description,
+        openGraph: {
+            images: [
+                { url: product?.photo },
+            ],
+        },
+    }
+}
+
 async function getIsOwner(userId: number) {
     const session = await getSession();
     if (session?.user?.id) {
