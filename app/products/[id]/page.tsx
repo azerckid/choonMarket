@@ -5,6 +5,7 @@ import { UserIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { unstable_cache as nextCache, revalidateTag } from "next/cache";
 
 async function getIsOwner(userId: number) {
     const session = await getSession();
@@ -32,9 +33,31 @@ async function getProduct(id: number) {
     return product;
 }
 
+const getCachedProduct = nextCache(getProduct, ["product-detail"], {
+    tags: ["product-detail", "xxxx"],
+});
+
+async function getProductTitle(id: number) {
+    console.log("title");
+    const product = await db.product.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            title: true,
+            description: true,
+            photo: true,
+        },
+    });
+    return product;
+}
+
+const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
+    tags: ["product-title", "xxxx"],
+});
+
 export async function generateMetadata({ params }: { params: { id: string } }) {
-    const { id } = await params;
-    const product = await getProduct(Number(id));
+    const product = await getCachedProductTitle(Number(params.id));
     return {
         title: product?.title,
         description: product?.description,
@@ -52,13 +75,16 @@ export default async function ProductDetail({ params }: { params: { id: string }
     if (isNaN(id)) {
         return notFound();
     }
-    const product = await getProduct(id);
+    const product = await getCachedProduct(id);
     if (!product) {
         return notFound();
     }
     console.log(product);
     const isOwner = await getIsOwner(product.userId);
-
+    const revalidate = async () => {
+        "use server";
+        revalidateTag("xxxx");
+    };
     return (
         <div className="mx-auto max-w-screen-md flex flex-col gap-5 justify-center">
             <div className="p-3 text-lg text-neutral-400 z-10 flex items-center gap-2">
@@ -113,12 +139,16 @@ export default async function ProductDetail({ params }: { params: { id: string }
                     채팅하기
                 </Link>
             </div>
-            {isOwner ? (<div className="flex flex-col gap-2 justify-center items-center p-5">
-                <p className="text-neutral-400">* if you are the owner, you can delete the product.</p>
-                <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
-                    Delete product
-                </button>
-            </div>) : null}
+            {isOwner ? (
+                <form action={revalidate}>
+                    <div className="flex flex-col gap-2 justify-center items-center p-5">
+                        <p className="text-neutral-400">* if you are the owner, you can delete the product.</p>
+                        <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
+                            Delete product
+                        </button>
+                    </div>
+                </form>
+            ) : null}
         </div>
     );
 }
