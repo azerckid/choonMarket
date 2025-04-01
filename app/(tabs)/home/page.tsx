@@ -3,13 +3,15 @@ import db from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/24/solid";
-import { unstable_cache } from "next/cache";
+import { unstable_cache as nextCache } from "next/cache";
 
 export const metadata = {
     title: "Home",
 };
 
-const getCachedProducts = unstable_cache(getInitialProducts, ["home-products"])
+const getCachedProducts = nextCache(getInitialProducts, ["home-products"], {
+    revalidate: 60,
+});
 
 async function getInitialProducts() {
     const products = await db.product.findMany({
@@ -27,6 +29,7 @@ async function getInitialProducts() {
     });
     return products;
 }
+
 export type InitialProducts = Prisma.PromiseReturnType<
     typeof getInitialProducts
 >;
