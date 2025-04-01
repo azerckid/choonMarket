@@ -47,7 +47,7 @@ export async function uploadProduct(formData: FormData) {
             }
         },
     });
-    redirect("/products");
+    redirect("/home");
 }
 
 export async function getUploadUrl() {

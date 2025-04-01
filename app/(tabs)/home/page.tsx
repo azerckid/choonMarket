@@ -12,6 +12,7 @@ export const metadata = {
 const getCachedProducts = nextCache(getInitialProducts, ["home-products"]);
 
 async function getInitialProducts() {
+    console.log("hit!!!!!");
     const products = await db.product.findMany({
         select: {
             title: true,
@@ -32,8 +33,11 @@ export type InitialProducts = Prisma.PromiseReturnType<
     typeof getInitialProducts
 >;
 
+// export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
 export default async function Products() {
-    const initialProducts = await getCachedProducts();
+    const initialProducts = await getInitialProducts();
     const revalidate = async () => {
         "use server";
         revalidatePath("/home");
@@ -42,9 +46,6 @@ export default async function Products() {
         <div>
             {/* <Link href="/home/recent" className="text-blue-500 text-lg font-semibold">RECENT</Link> */}
             <ProductList initialProducts={initialProducts} />
-            <form action={revalidate}>
-                <button>Revalidate</button>
-            </form>
             <Link
                 href="/home/add"
                 className="bg-blue-500 text-white flex items-center justify-center rounded-full size-16 fixed bottom-24 right-8 transition-colors hover:bg-pink-400"
