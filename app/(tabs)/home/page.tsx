@@ -3,13 +3,11 @@ import db from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/24/solid";
-import { unstable_cache as nextCache, revalidatePath } from "next/cache";
 
 export const metadata = {
     title: "Home",
 };
 
-const getCachedProducts = nextCache(getInitialProducts, ["home-products"]);
 
 async function getInitialProducts() {
     console.log("hit!!!!!");
@@ -33,15 +31,11 @@ export type InitialProducts = Prisma.PromiseReturnType<
     typeof getInitialProducts
 >;
 
-// export const dynamic = "force-dynamic";
-export const revalidate = 60;
+export const dynamic = "auto";
+// export const revalidate = 60;
 
 export default async function Products() {
     const initialProducts = await getInitialProducts();
-    const revalidate = async () => {
-        "use server";
-        revalidatePath("/home");
-    };
     return (
         <div>
             {/* <Link href="/home/recent" className="text-blue-500 text-lg font-semibold">RECENT</Link> */}

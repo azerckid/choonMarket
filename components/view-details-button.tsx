@@ -1,9 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 export default function ViewDetailsButton({ id }: { id: string }) {
-    const router = useRouter();
 
     return (
         <button

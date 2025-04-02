@@ -4,6 +4,7 @@ import db from "@/lib/db";
 import Button from "@/components/button";
 import { logout } from "./action";
 import { formatUsername } from "@/lib/utils";
+import Image from "next/image";
 
 export default async function Profile() {
     const session = await getSession();
@@ -38,10 +39,12 @@ export default async function Profile() {
             </div>
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
-                    <img
+                    <Image
                         src={user.avatar || "/default-avatar.png"}
                         alt={`${user.username}'s avatar`}
-                        className="w-16 h-16 rounded-full"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
                     />
                     <p><span className="font-medium">Email:</span> {user.email}</p>
                     <p><span className="font-medium">Phone:</span> {user.phone || "Not set"}</p>

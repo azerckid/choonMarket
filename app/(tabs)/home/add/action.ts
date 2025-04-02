@@ -1,13 +1,5 @@
 "use server";
 
-type FormState = {
-    fieldErrors?: {
-        title?: string[];
-        price?: string[];
-        description?: string[];
-    };
-} | null;
-
 import { productSchema } from "./zodSchema";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";

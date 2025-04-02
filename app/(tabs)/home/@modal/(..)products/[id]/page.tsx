@@ -1,23 +1,22 @@
 import Image from "next/image";
 import { getProduct } from "./action";
-import CloseButton from "@/components/close-button";
 import GobackButton from "@/components/goback-button";
 import ViewDetailsButton from "@/components/view-details-button";
 
-interface Product {
-    id: number;
-    title: string;
-    price: number;
-    photo: string;
-    description: string;
-    created_at: Date;
-    updated_at: Date;
-    userId: number;
-    user: {
-        id: number;
-        username: string;
-    };
-}
+// interface Product {
+//     id: number;
+//     title: string;
+//     price: number;
+//     photo: string;
+//     description: string;
+//     created_at: Date;
+//     updated_at: Date;
+//     userId: number;
+//     user: {
+//         id: number;
+//         username: string;
+//     };
+// }
 
 export default async function ModalPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

@@ -56,7 +56,8 @@ const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
 });
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-    const product = await getCachedProductTitle(Number(params.id));
+    const { id } = await params;
+    const product = await getCachedProductTitle(Number(id));
     return {
         title: product?.title,
         description: product?.description,

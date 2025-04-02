@@ -8,6 +8,7 @@ interface CloseButtonProps {
 }
 
 export default function CloseButton({ id }: CloseButtonProps) {
+    console.log("id", id);
     const router = useRouter();
     const onCloseClick = () => {
         router.back();

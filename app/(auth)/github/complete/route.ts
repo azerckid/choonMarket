@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import db from "@/lib/db";
 import authenticateUser from "@/lib/auth";
@@ -44,8 +43,8 @@ async function getGithubUserEmail(accessToken: string) {
         },
         cache: "no-cache",
     });
-    const data = await response.json();
-    return data.find((email: any) => email.primary)?.email || data[0]?.email;
+    const data = await response.json() as { email: string, primary: boolean }[];
+    return data.find((email: { email: string, primary: boolean }) => email.primary)?.email || data[0]?.email;
 }
 
 export async function GET(request: NextRequest) {

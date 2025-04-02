@@ -10,20 +10,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 
-type FormState = {
-    fieldErrors?: {
-        title?: string[];
-        price?: string[];
-        description?: string[];
-    };
-} | null;
+// type FormState = {
+//     fieldErrors?: {
+//         title?: string[];
+//         price?: string[];
+//         description?: string[];
+//     };
+// } | null;
 
 export default function AddProduct() {
     const router = useRouter();
     const [preview, setPreview] = useState("");
     const [uploadUrl, setUploadUrl] = useState("");
     const [file, setFile] = useState<File | null>(null);
-    const { register, handleSubmit, setValue, setError, formState: { errors } } = useForm<ProductType>({ resolver: zodResolver(productSchema) });
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductType>({ resolver: zodResolver(productSchema) });
 
     const onImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -82,15 +82,9 @@ export default function AddProduct() {
             formData.append("price", data.price.toString());
             formData.append("description", data.description);
 
-            // const errors = await uploadProduct(formData);
-            // if (errors?.fieldErrors) {
-            //     if (errors.fieldErrors.title) setError("title", { message: errors.fieldErrors.title[0] });
-            //     if (errors.fieldErrors.price) setError("price", { message: errors.fieldErrors.price[0] });
-            //     if (errors.fieldErrors.description) setError("description", { message: errors.fieldErrors.description[0] });
-            // }
-
             return uploadProduct(formData);
         } catch (error) {
+            console.error(error);
             return {
                 fieldErrors: {
                     title: ["이미지 업로드 중 오류가 발생했습니다."]
