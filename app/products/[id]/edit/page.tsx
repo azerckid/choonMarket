@@ -22,6 +22,7 @@ export default function EditProduct({
     const [preview, setPreview] = useState("");
     const [uploadUrl, setUploadUrl] = useState("");
     const [file, setFile] = useState<File | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductType>({
         resolver: zodResolver(productSchema)
     });
@@ -101,6 +102,7 @@ export default function EditProduct({
     useEffect(() => {
         const fetchProduct = async () => {
             try {
+                setIsLoading(true);
                 const data = await getProduct(id);
                 console.log("Fetched product data:", data);
                 if (data) {
@@ -108,12 +110,18 @@ export default function EditProduct({
                     setValue("price", data.price);
                     setValue("description", data.description);
                     setValue("photo", data.photo);
-                    setPreview(data.photo);
+                    // 기존 이미지를 설정
+                    if (data.photo) {
+                        console.log("Setting preview image:", data.photo);
+                        setPreview(`${data.photo}/public`);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching product:", error);
                 alert("제품 정보를 불러오는데 실패했습니다.");
                 router.push(`/products/${id}`);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchProduct();
@@ -126,17 +134,22 @@ export default function EditProduct({
                     htmlFor="photo"
                     className="border-2 aspect-square flex items-center justify-center flex-col text-neutral-300 border-neutral-300 rounded-md border-dashed cursor-pointer"
                     style={{
-                        backgroundImage: `url(${preview})`,
+                        backgroundImage: preview ? `url(${preview})` : undefined,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                     }}
                 >
-                    {preview ? (
+                    {isLoading ? (
+                        <div className="w-full h-full flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-neutral-300"></div>
+                        </div>
+                    ) : preview ? (
                         <div
                             onClick={(e) => {
                                 e.preventDefault();
                                 setPreview("");
                                 setFile(null);
+                                setValue("photo", "");
                             }}
                             className="w-full h-full bg-black/50 text-white flex items-center justify-center"
                         >

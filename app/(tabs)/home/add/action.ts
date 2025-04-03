@@ -40,6 +40,10 @@ export async function uploadProduct(formData: FormData) {
         },
     });
     revalidateTag("product-list");
+    revalidateTag("xxxx");
+    revalidateTag("product-detail");
+    revalidateTag("product-title");
+
     redirect("/home");
 }
 
