@@ -5,6 +5,7 @@ import Button from "@/components/button";
 import { logout } from "./action";
 import { formatUsername } from "@/lib/utils";
 import Image from "next/image";
+import { Suspense } from "react";
 
 export default async function Profile() {
     const session = await getSession();
@@ -35,19 +36,27 @@ export default async function Profile() {
     return (
         <div className="flex flex-col gap-10 py-8 px-6">
             <div className="flex flex-col gap-2 *:font-medium">
-                <h2 className="text-xl">Welcome, {formatUsername(user.username)}!</h2>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <h2 className="text-xl">Welcome, {formatUsername(user.username)}!</h2>
+                </Suspense>
             </div>
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
-                    <Image
-                        src={user.avatar || "/default-avatar.png"}
-                        alt={`${user.username}'s avatar`}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                    />
-                    <p><span className="font-medium">Email:</span> {user.email}</p>
-                    <p><span className="font-medium">Phone:</span> {user.phone || "Not set"}</p>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <Image
+                            src={user.avatar || "/default-avatar.png"}
+                            alt={`${user.username}'s avatar`}
+                            width={40}
+                            height={40}
+                            className="rounded-full"
+                        />
+                    </Suspense>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <p><span className="font-medium">Email:</span> {user.email}</p>
+                    </Suspense>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <p><span className="font-medium">Phone:</span> {user.phone || "Not set"}</p>
+                    </Suspense>
                 </div>
                 <form action={logout}>
                     <Button title="Logout" />

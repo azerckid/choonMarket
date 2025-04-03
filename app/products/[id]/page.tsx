@@ -5,7 +5,7 @@ import { UserIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { unstable_cache as nextCache, revalidateTag } from "next/cache";
+import { unstable_cache as nextCache } from "next/cache";
 
 async function getIsOwner(userId: number) {
     const session = await getSession();
@@ -81,10 +81,7 @@ export default async function ProductDetail({ params }: { params: { id: string }
     }
     console.log(product);
     const isOwner = await getIsOwner(product.userId);
-    const revalidate = async () => {
-        "use server";
-        revalidateTag("xxxx");
-    };
+
     return (
         <div className="mx-auto max-w-screen-md flex flex-col gap-5 justify-center">
             <div className="p-3 text-lg text-neutral-400 z-10 flex items-center gap-2">
@@ -121,12 +118,6 @@ export default async function ProductDetail({ params }: { params: { id: string }
             <div className="p-5 pb-10">
                 <h1 className="text-2xl font-semibold">{product.title}</h1>
                 <p>{product.description}</p>
-                <p className="mt-4 text-neutral-400">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </p>
             </div>
             <div className="flex justify-between items-center p-5">
                 <span className="font-semibold text-xl">
@@ -140,15 +131,21 @@ export default async function ProductDetail({ params }: { params: { id: string }
                 </Link>
             </div>
             {isOwner ? (
-                <form action={revalidate}>
+                <form>
                     <div className="flex flex-col gap-2 justify-center items-center p-5">
                         <p className="text-neutral-400">* if you are the owner, you can delete the product.</p>
-                        <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
-                            Delete product
-                        </button>
+                        <div className="flex gap-2">
+                            <Link href={`/products/${id}/edit`} className="bg-blue-500 px-5 py-2.5 rounded-md text-white font-semibold">
+                                Edit product
+                            </Link>
+                            <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
+                                Delete product
+                            </button>
+                        </div>
                     </div>
                 </form>
-            ) : null}
-        </div>
+            ) : null
+            }
+        </div >
     );
 }

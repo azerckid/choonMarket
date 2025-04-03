@@ -4,7 +4,7 @@ import { productSchema } from "./zodSchema";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-
+import { revalidateTag } from "next/cache";
 export async function uploadProduct(formData: FormData) {
     const session = await getSession();
     if (!session?.user?.id) {
@@ -39,6 +39,7 @@ export async function uploadProduct(formData: FormData) {
             }
         },
     });
+    revalidateTag("product-list");
     redirect("/home");
 }
 
