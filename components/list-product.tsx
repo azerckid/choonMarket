@@ -2,37 +2,34 @@ import { formatToTimeAgo, formatToWon } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
-interface ListProductProps {
+interface Product {
+    id: number;
     title: string;
     price: number;
-    created_at: Date;
     photo: string;
-    id: number;
+    createdAt: Date;
 }
 
 export default function ListProduct({
+    id,
     title,
     price,
-    created_at,
     photo,
-    id,
-}: ListProductProps) {
+    createdAt,
+}: Product) {
     return (
         <Link href={`/products/${id}`} className="flex gap-5">
-            <div className="relative size-28 rounded-md overflow-hidden">
-                <Image
-                    fill
-                    src={photo.startsWith('https://imagedelivery.net') ? `${photo}/public` : photo}
-                    className="object-cover"
-                    alt={title}
-                />
-            </div>
-            <div className="flex flex-col gap-1 *:text-white">
+            <Image
+                className="size-28 rounded-md"
+                src={`${photo}/public`}
+                alt={title}
+                width={500}
+                height={500}
+            />
+            <div className="flex flex-col">
                 <span className="text-lg">{title}</span>
-                <span className="text-sm text-neutral-500">
-                    {formatToTimeAgo(created_at.toString())}
-                </span>
-                <span className="text-lg font-semibold">{formatToWon(price)} 원</span>
+                <span className="text-lg font-semibold">{formatToWon(price)}원</span>
+                <span className="text-sm text-neutral-400">{formatToTimeAgo(createdAt.toString())}</span>
             </div>
         </Link>
     );

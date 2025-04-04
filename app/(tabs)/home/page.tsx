@@ -20,13 +20,13 @@ async function getInitialProducts() {
         select: {
             title: true,
             price: true,
-            created_at: true,
+            createdAt: true,
             photo: true,
             id: true,
         },
         take: 5,
         orderBy: {
-            created_at: "desc",
+            createdAt: "desc",
         },
     });
     return products;

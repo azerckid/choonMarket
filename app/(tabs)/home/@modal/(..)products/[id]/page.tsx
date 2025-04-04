@@ -9,8 +9,8 @@ import ViewDetailsButton from "@/components/view-details-button";
 //     price: number;
 //     photo: string;
 //     description: string;
-//     created_at: Date;
-//     updated_at: Date;
+//     createdAt: Date;
+//     updatedAt: Date;
 //     userId: number;
 //     user: {
 //         id: number;
@@ -53,9 +53,9 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
                     <div className="flex flex-col gap-1 self-end items-end">
                         <span className="text-neutral-500">{product?.user.username}</span>
                         <span className="text-neutral-500">
-                            {product?.updated_at
-                                ? `${product.updated_at.toLocaleDateString()}`
-                                : `${product?.created_at?.toLocaleDateString()}`
+                            {product?.updatedAt
+                                ? `${product.updatedAt.toLocaleDateString()}`
+                                : `${product?.createdAt?.toLocaleDateString()}`
                             }
                         </span>
                         <span className="text-neutral-500">{product?.price.toLocaleString()} 원</span>

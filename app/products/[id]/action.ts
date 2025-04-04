@@ -1,12 +1,9 @@
 "use server";
 
-import { productSchema } from "@/app/(tabs)/home/add/zodSchema";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
-
-// ... existing code ...
 
 // 제품 삭제 함수
 export async function deleteProduct(id: string) {
