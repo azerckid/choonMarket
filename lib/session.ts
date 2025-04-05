@@ -17,12 +17,4 @@ export const getSession = async () => {
     return cookie;
 }
 
-declare module "next/session" {
-    interface SessionData {
-        user?: {
-            id: number;
-            username?: string;
-            email?: string;
-        }
-    }
-}   
+export type { SessionContent };   
