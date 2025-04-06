@@ -4,7 +4,16 @@ import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 
-export async function likePost(postId: number) {
+export async function incrementViews(id: number) {
+    await db.post.update({
+        where: { id },
+        data: { views: { increment: 1 } },
+    });
+    revalidatePath(`/posts/${id}`);
+}
+
+export async function likePost(formData: FormData) {
+    const postId = Number(formData.get("postId"));
     const session = await getSession();
     try {
         await db.like.create({
@@ -17,7 +26,8 @@ export async function likePost(postId: number) {
     } catch (e) { }
 }
 
-export async function dislikePost(postId: number) {
+export async function dislikePost(formData: FormData) {
+    const postId = Number(formData.get("postId"));
     try {
         const session = await getSession();
         await db.like.delete({
