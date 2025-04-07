@@ -6,8 +6,9 @@ export async function GET(
     request: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    const productId = Number(params.id);
-    if (isNaN(productId)) {
+    const { id: productId } = await params;
+    const id = Number(productId);
+    if (isNaN(id)) {
         return NextResponse.json(
             { error: "Invalid product ID" },
             { status: 400 }
@@ -17,7 +18,7 @@ export async function GET(
     try {
         const comments = await db.productComment.findMany({
             where: {
-                productId,
+                productId: id,
             },
             include: {
                 user: {
@@ -58,10 +59,11 @@ export async function POST(
         );
     }
 
-    const productId = Number(params.id);
-    console.log("Product ID:", productId);
+    const { id: productId } = await params;
+    const id = Number(productId);
+    console.log("Product ID:", id);
 
-    if (isNaN(productId)) {
+    if (isNaN(id)) {
         console.log("Invalid product ID");
         return NextResponse.json(
             { error: "Invalid product ID" },
@@ -86,7 +88,7 @@ export async function POST(
         const comment = await db.productComment.create({
             data: {
                 content,
-                productId,
+                productId: id,
                 userId: session.user.id,
             },
             include: {

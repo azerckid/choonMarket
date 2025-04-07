@@ -10,7 +10,18 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PostModal from "@/components/post-modal";
-import { Post } from "../types";
+
+export interface Post {
+    id: number;
+    title: string;
+    description: string | null;
+    createdAt: Date;
+    views: number;
+    _count: {
+        likes: number;
+        comments: number;
+    };
+}
 
 export default function LifeClient() {
     const router = useRouter();
@@ -87,9 +98,9 @@ export default function LifeClient() {
             {/* Floating Action Button */}
             <button
                 onClick={() => setIsModalOpen(true)}
-                className="fixed bottom-5 right-5 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+                className="bg-green-500 text-white flex items-center justify-center rounded-full size-16 fixed bottom-24 right-8 transition-colors hover:bg-green-600"
             >
-                <PlusIcon className="size-6" />
+                <PlusIcon className="size-10" />
             </button>
 
             {/* Post Modal */}

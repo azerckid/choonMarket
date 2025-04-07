@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { createPost } from "@/app/(tabs)/life/actions";
+import { createPost } from "@/app/(tabs)/life/action";
 import { useState } from "react";
 
 interface PostFormProps {

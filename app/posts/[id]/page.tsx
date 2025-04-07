@@ -83,6 +83,14 @@ export default async function PostDetail({
         return notFound();
     }
     const session = await getSession();
+    console.log("Session in post page:", {
+        exists: !!session,
+        hasUser: !!session.user,
+        userId: session.user?.id,
+        username: session.user?.username,
+        email: session.user?.email
+    });
+    console.log("isLoggedIn value:", !!session.user);
     const { isLiked, likeCount } = await getCachedLikeStatus(id, session.user?.id);
 
     return (

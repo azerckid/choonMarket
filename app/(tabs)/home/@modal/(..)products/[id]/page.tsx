@@ -5,32 +5,24 @@ import ViewDetailsButton from "@/components/view-details-button";
 import ProductCommentSection from "@/components/product-comment-section";
 import { getSession } from "@/lib/session";
 
-// interface Product {
-//     id: number;
-//     title: string;
-//     price: number;
-//     photo: string;
-//     description: string;
-//     createdAt: Date;
-//     updatedAt: Date;
-//     userId: number;
-//     user: {
-//         id: number;
-//         username: string;
-//     };
-// }
-
 export default async function ModalPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const result = await getProduct(id);
     const product = result.success ? result.data : null;
     console.log(product?.photo);
     const session = await getSession();
-    console.log("Session in product page:", session);
+    console.log("Session in product page:", {
+        exists: !!session,
+        hasUser: !!session.user,
+        userId: session.user?.id,
+        username: session.user?.username,
+        email: session.user?.email
+    });
+    console.log("isLoggedIn value:", !!session.user);
 
     return (
         <div className="fixed w-full h-full z-50 flex items-start justify-center bg-black left-0 top-0 overflow-y-auto">
-            <div className="max-w-screen-sm w-full flex flex-col gap-4 py-8">
+            <div className="max-w-screen-sm w-full flex flex-col gap-4 py-8 mb-12">
                 <div className="flex flex-row gap-2 justify-between mb-4 h-16">
                     <div className="relative flex flex-row items-center">
                         <GobackButton id={id} />

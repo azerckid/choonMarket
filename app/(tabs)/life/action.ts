@@ -4,7 +4,7 @@ import { getSession } from "@/lib/session";
 import db from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { unstable_noStore as noStore } from "next/cache";
-import { Post } from "../types";
+import { Post } from "./components/life-client";
 
 export async function getPosts(): Promise<Post[]> {
     // Disable caching to always fetch the latest data

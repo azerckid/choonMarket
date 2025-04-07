@@ -66,21 +66,21 @@ export default function CommentSection({ postId, isLoggedIn }: CommentSectionPro
 
     return (
         <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">댓글</h3>
+            <h3 className="text-lg font-semibold mb-4 text-black">댓글</h3>
 
             {isLoggedIn ? (
-                <form onSubmit={handleSubmit} className="mb-6">
+                <form onSubmit={handleSubmit} className="mb-6 flex gap-2">
                     <input
                         type="text"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="댓글을 입력하세요..."
-                        className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-neutral-800 text-white border-neutral-700 placeholder-neutral-500"
+                        className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
                     />
                     <button
                         type="submit"
                         disabled={isLoading || !newComment.trim()}
-                        className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? "게시 중..." : "댓글 작성"}
                     </button>
@@ -91,7 +91,7 @@ export default function CommentSection({ postId, isLoggedIn }: CommentSectionPro
 
             <div className="space-y-4">
                 {comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-3 p-4 bg-neutral-800 rounded-lg">
+                    <div key={comment.id} className="flex gap-3 p-4 bg-white rounded-lg border border-gray-200">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden">
                             <Image
                                 src={comment.user.avatar}
@@ -102,12 +102,12 @@ export default function CommentSection({ postId, isLoggedIn }: CommentSectionPro
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
-                                <span className="font-medium text-white">{comment.user.username}</span>
-                                <span className="text-sm text-neutral-400">
+                                <span className="font-semibold text-black">{comment.user.username}</span>
+                                <span className="text-sm text-gray-500">
                                     {new Date(comment.createdAt).toLocaleDateString()}
                                 </span>
                             </div>
-                            <p className="mt-1 text-neutral-300">{comment.content}</p>
+                            <p className="mt-1 text-black">{comment.content}</p>
                         </div>
                     </div>
                 ))}

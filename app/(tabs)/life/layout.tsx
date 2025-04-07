@@ -1,7 +1,9 @@
-import { metadata } from "./metadata";
+import { Metadata } from "next";
 
-export { metadata };
-
+export const metadata: Metadata = {
+    title: "동네생활",
+    description: "동네생활 게시판입니다.",
+};
 export default function LifeLayout({
     children,
 }: {
