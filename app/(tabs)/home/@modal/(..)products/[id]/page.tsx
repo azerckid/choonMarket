@@ -2,6 +2,8 @@ import Image from "next/image";
 import { getProduct } from "./action";
 import GobackButton from "@/components/goback-button";
 import ViewDetailsButton from "@/components/view-details-button";
+import ProductCommentSection from "@/components/product-comment-section";
+import { getSession } from "@/lib/session";
 
 // interface Product {
 //     id: number;
@@ -23,10 +25,12 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
     const result = await getProduct(id);
     const product = result.success ? result.data : null;
     console.log(product?.photo);
+    const session = await getSession();
+    console.log("Session in product page:", session);
 
     return (
-        <div className="absolute w-full h-full z-50 flex items-center justify-center bg-black left-0 top-0">
-            <div className="max-w-screen-sm h-1/2  flex flex-col gap-4 justify-center w-full">
+        <div className="fixed w-full h-full z-50 flex items-start justify-center bg-black left-0 top-0 overflow-y-auto">
+            <div className="max-w-screen-sm w-full flex flex-col gap-4 py-8">
                 <div className="flex flex-row gap-2 justify-between mb-4 h-16">
                     <div className="relative flex flex-row items-center">
                         <GobackButton id={id} />
@@ -67,6 +71,7 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
                 <div>
                     <p className="text-neutral-500 p-10">{product?.description}</p>
                 </div>
+                {product && <ProductCommentSection productId={product.id} isLoggedIn={!!session.user} />}
             </div>
         </div>
     );

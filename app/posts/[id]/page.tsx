@@ -1,14 +1,14 @@
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { unstable_cache as nextCache } from "next/cache";
+import { likePost, dislikePost } from "./actions";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { formatToTimeAgo } from "@/lib/utils";
-import { EyeIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
-import { HandThumbUpIcon as HandThumbUpIconOutline } from "@heroicons/react/24/outline";
-import { unstable_cache as nextCache } from "next/cache";
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import { likePost, dislikePost } from "./actions";
+import { EyeIcon } from "@heroicons/react/24/solid";
 import ViewCounter from "./view-counter";
 import LikeButton from "@/components/like-button";
+import CommentSection from "@/components/comment-section";
 
 async function getPost(id: number) {
     try {
@@ -113,21 +113,9 @@ export default async function PostDetail({
                 <form action={isLiked ? dislikePost : likePost}>
                     <input type="hidden" name="postId" value={id} />
                     <LikeButton isLiked={isLiked} likeCount={likeCount} postId={id} />
-                    {/* <button
-                        className={
-                            `flex items-center gap-2 text-neutral-400 text-sm
-                            border-none rounded-full p-2
-                             ${isLiked ? "bg-blue-500 text-white" : ""}`}
-                    >
-                        {isLiked ? (
-                            <HandThumbUpIcon className="size-5" />
-                        ) : (
-                            <HandThumbUpIconOutline className="size-5" />
-                        )}
-                        <span>공감하기 ({post._count.likes})</span>
-                    </button> */}
                 </form>
             </div>
+            <CommentSection postId={id} isLoggedIn={!!session.user} />
         </div>
     );
 }
