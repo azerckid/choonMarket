@@ -8,6 +8,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { likePost, dislikePost } from "./actions";
 import ViewCounter from "./view-counter";
+import LikeButton from "@/components/like-button";
 
 async function getPost(id: number) {
     try {
@@ -72,7 +73,7 @@ export default async function PostDetail({
 }: {
     params: { id: string };
 }) {
-    const idParam = await params.id;
+    const { id: idParam } = await params;
     const id = Number(idParam);
     if (isNaN(id)) {
         return notFound();
@@ -111,7 +112,8 @@ export default async function PostDetail({
                 </div>
                 <form action={isLiked ? dislikePost : likePost}>
                     <input type="hidden" name="postId" value={id} />
-                    <button
+                    <LikeButton isLiked={isLiked} likeCount={likeCount} postId={id} />
+                    {/* <button
                         className={
                             `flex items-center gap-2 text-neutral-400 text-sm
                             border-none rounded-full p-2
@@ -123,7 +125,7 @@ export default async function PostDetail({
                             <HandThumbUpIconOutline className="size-5" />
                         )}
                         <span>공감하기 ({post._count.likes})</span>
-                    </button>
+                    </button> */}
                 </form>
             </div>
         </div>
