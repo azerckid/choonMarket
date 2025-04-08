@@ -74,7 +74,7 @@ export async function createPost(formData: FormData) {
 
         revalidatePath("/life");
         return { success: "글이 작성되었습니다.", post: newPost };
-    } catch (error) {
+    } catch {
         return { error: "글 작성에 실패했습니다." };
     }
 } 

@@ -17,31 +17,43 @@ export async function incrementViews(id: number) {
 export async function likePost(formData: FormData) {
     const postId = Number(formData.get("postId"));
     const session = await getSession();
+    if (!session?.user?.id) {
+        return { error: "로그인이 필요합니다." };
+    }
+    const userId = session.user.id;
     try {
         await db.like.create({
             data: {
                 postId,
-                userId: session.user?.id!,
+                userId,
             },
         });
         revalidatePath(`/posts/${postId}`);
-    } catch (e) { }
+    } catch {
+        // Error handling if needed
+    }
 }
 
 export async function dislikePost(formData: FormData) {
     const postId = Number(formData.get("postId"));
+    const session = await getSession();
+    if (!session?.user?.id) {
+        return { error: "로그인이 필요합니다." };
+    }
+    const userId = session.user.id;
     try {
-        const session = await getSession();
         await db.like.delete({
             where: {
                 id: {
                     postId,
-                    userId: session.user?.id!,
+                    userId,
                 },
             },
         });
         revalidatePath(`/posts/${postId}`);
-    } catch (e) { }
+    } catch {
+        // Error handling if needed
+    }
 }
 
 // Get comments for a post
@@ -77,7 +89,7 @@ export async function getComments(postId: number): Promise<Comment[]> {
 export async function createComment(postId: number, content: string): Promise<Comment> {
     try {
         const session = await getSession();
-        if (!session.user) {
+        if (!session?.user) {
             throw new Error("Authentication required");
         }
 

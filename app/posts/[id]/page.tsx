@@ -30,7 +30,7 @@ async function getPost(id: number) {
             },
         });
         return post;
-    } catch (e) {
+    } catch {
         return null;
     }
 }

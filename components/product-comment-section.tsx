@@ -25,19 +25,18 @@ export default function ProductCommentSection({ productId, isLoggedIn }: Product
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const response = await fetch(`/api/products/${productId}/comments`);
+                if (!response.ok) throw new Error("Failed to fetch comments");
+                const data = await response.json();
+                setComments(data);
+            } catch (error) {
+                console.error("Error fetching comments:", error);
+            }
+        };
         fetchComments();
     }, [productId]);
-
-    const fetchComments = async () => {
-        try {
-            const response = await fetch(`/api/products/${productId}/comments`);
-            if (!response.ok) throw new Error("Failed to fetch comments");
-            const data = await response.json();
-            setComments(data);
-        } catch (error) {
-            console.error("Error fetching comments:", error);
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -25,19 +25,18 @@ export default function CommentSection({ postId, isLoggedIn }: CommentSectionPro
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const response = await fetch(`/api/posts/${postId}/comments`);
+                if (!response.ok) throw new Error("Failed to fetch comments");
+                const data = await response.json();
+                setComments(data);
+            } catch (error) {
+                console.error("Error fetching comments:", error);
+            }
+        };
         fetchComments();
     }, [postId]);
-
-    const fetchComments = async () => {
-        try {
-            const response = await fetch(`/api/posts/${postId}/comments`);
-            if (!response.ok) throw new Error("Failed to fetch comments");
-            const data = await response.json();
-            setComments(data);
-        } catch (error) {
-            console.error("Error fetching comments:", error);
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
