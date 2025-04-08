@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { formatUsername } from "@/lib/utils";
 
 interface Comment {
     id: number;
@@ -102,7 +103,7 @@ export default function CommentSection({ postId, isLoggedIn }: CommentSectionPro
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
-                                <span className="font-semibold text-black">{comment.user.username}</span>
+                                <span className="font-semibold text-black">{formatUsername(comment.user.username)}</span>
                                 <span className="text-sm text-gray-500">
                                     {new Date(comment.createdAt).toLocaleDateString()}
                                 </span>

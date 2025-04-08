@@ -2,51 +2,146 @@
 
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { revalidateTag } from "next/cache";
-import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
-// 제품 삭제 함수
-export async function deleteProduct(id: string) {
+// 세션 확인 헬퍼 함수
+async function checkSession() {
     const session = await getSession();
     if (!session?.user?.id) {
         return {
-            fieldErrors: {
-                title: ["로그인이 필요합니다."]
-            }
+            error: "로그인이 필요합니다.",
+            session: null,
         };
     }
+    return { session };
+}
 
-    // 제품 소유자 확인
+// 제품 조회 헬퍼 함수
+async function getProductById(id: number) {
     const product = await db.product.findUnique({
-        where: { id: Number(id) },
-        select: { userId: true }
+        where: {
+            id,
+        },
+        select: {
+            userId: true,
+        },
     });
 
     if (!product) {
         return {
-            fieldErrors: {
-                title: ["제품을 찾을 수 없습니다."]
-            }
+            error: "상품을 찾을 수 없습니다.",
+            product: null,
         };
     }
 
-    if (product.userId !== session.user.id) {
+    return { product };
+}
+
+export async function getIsOwner(userId: number) {
+    const { session } = await checkSession();
+    if (!session) return false;
+
+    return session.user!.id === userId;
+}
+
+export async function getProduct(id: number) {
+    const product = await db.product.findUnique({
+        where: {
+            id,
+        },
+        include: {
+            user: {
+                select: {
+                    username: true,
+                    avatar: true,
+                },
+            },
+        },
+    });
+    return product;
+}
+
+export async function deleteProduct(id: number) {
+    const { session, error } = await checkSession();
+    if (error) return { error };
+
+    const { product, error: productError } = await getProductById(id);
+    if (productError) return { error: productError };
+
+    if (product!.userId !== session!.user!.id) {
         return {
-            fieldErrors: {
-                title: ["삭제 권한이 없습니다."]
-            }
+            error: "권한이 없습니다.",
         };
     }
 
     await db.product.delete({
-        where: { id: Number(id) }
+        where: {
+            id,
+        },
     });
 
-    // 캐시 갱신
-    revalidateTag("product-detail");
-    revalidateTag("product-title");
-    revalidateTag("product-list");
-    revalidateTag("xxxx");
+    revalidatePath("/");
+    return {
+        success: true,
+    };
+}
 
-    redirect("/home");
+export async function createChatRoom(productId: string) {
+    const { session, error } = await checkSession();
+    if (error) return { error };
+
+    const { product, error: productError } = await getProductById(Number(productId));
+    if (productError) return { error: productError };
+
+    // 이미 존재하는 채팅방이 있는지 확인
+    const existingRoom = await db.chatRoom.findFirst({
+        where: {
+            AND: [
+                {
+                    users: {
+                        some: {
+                            id: product!.userId,
+                        },
+                    },
+                },
+                {
+                    users: {
+                        some: {
+                            id: session!.user!.id,
+                        },
+                    },
+                },
+                {
+                    productId: Number(productId),
+                },
+            ],
+        },
+    });
+
+    if (existingRoom) {
+        return {
+            roomId: existingRoom.id,
+        };
+    }
+
+    // 새로운 채팅방 생성
+    const room = await db.chatRoom.create({
+        data: {
+            users: {
+                connect: [
+                    {
+                        id: product!.userId,
+                    },
+                    {
+                        id: session!.user!.id,
+                    },
+                ],
+            },
+            productId: Number(productId),
+        },
+    });
+
+    return {
+        roomId: room.id,
+    };
 } 

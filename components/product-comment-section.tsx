@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { formatUsername } from "@/lib/utils";
 
 interface ProductComment {
     id: number;
@@ -106,7 +107,7 @@ export default function ProductCommentSection({ productId, isLoggedIn }: Product
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
-                                <span className="font-medium text-white">{comment.user.username}</span>
+                                <span className="font-medium text-white">{formatUsername(comment.user.username)}</span>
                                 <span className="text-sm text-neutral-400">
                                     {new Date(comment.createdAt).toLocaleDateString()}
                                 </span>

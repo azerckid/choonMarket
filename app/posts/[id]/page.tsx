@@ -4,7 +4,7 @@ import { unstable_cache as nextCache } from "next/cache";
 import { likePost, dislikePost } from "./actions";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { formatToTimeAgo } from "@/lib/utils";
+import { formatToTimeAgo, formatUsername } from "@/lib/utils";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import ViewCounter from "./view-counter";
 import LikeButton from "@/components/like-button";
@@ -105,7 +105,7 @@ export default async function PostDetail({
                     alt={post.user.username}
                 />
                 <div>
-                    <span className="text-sm font-semibold">{post.user.username}</span>
+                    <span className="text-sm font-semibold">{formatUsername(post.user.username)}</span>
                     <div className="text-xs">
                         <span>{formatToTimeAgo(post.createdAt.toString())}</span>
                     </div>
