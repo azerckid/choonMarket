@@ -2,6 +2,7 @@
 
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
+import { revalidatePath } from "next/cache";
 
 // 타입 정의
 interface User {
@@ -86,4 +87,50 @@ export async function getUnreadMessageCounts(roomIds: string[], userId: number):
     }
 
     return counts;
+}
+
+export async function deleteChatRoom(chatRoomId: string) {
+    const session = await getSession();
+    if (!session?.user?.id) {
+        return {
+            error: "로그인이 필요합니다."
+        };
+    }
+
+    // 채팅방 참여자 확인
+    const chatRoom = await db.chatRoom.findUnique({
+        where: { id: chatRoomId },
+        include: {
+            users: {
+                where: {
+                    id: session.user.id
+                }
+            }
+        }
+    });
+
+    if (!chatRoom) {
+        return {
+            error: "채팅방을 찾을 수 없습니다."
+        };
+    }
+
+    if (chatRoom.users.length === 0) {
+        return {
+            error: "삭제 권한이 없습니다."
+        };
+    }
+
+    // 채팅방과 관련된 모든 메시지 삭제
+    await db.message.deleteMany({
+        where: { chatRoomId }
+    });
+
+    // 채팅방 삭제
+    await db.chatRoom.delete({
+        where: { id: chatRoomId }
+    });
+
+    revalidatePath("/chat");
+    return { success: true };
 } 
