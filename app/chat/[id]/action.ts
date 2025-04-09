@@ -76,7 +76,7 @@ export async function sendMessage(formData: FormData) {
     const chatRoomId = formData.get("chatRoomId");
     const content = formData.get("content");
 
-    if (!chatRoomId || !content) {
+    if (!chatRoomId || !content || content.toString().trim() === "") {
         return {
             error: "메시지 내용을 입력해주세요."
         };
@@ -87,6 +87,7 @@ export async function sendMessage(formData: FormData) {
             payload: content.toString(),
             chatRoomId: chatRoomId.toString(),
             userId: session.user!.id,
+            status: "sent",
         },
     });
 

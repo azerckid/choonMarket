@@ -1,20 +1,28 @@
+"use server";
+
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 
 interface SessionContent {
     user?: {
         id: number;
-        username?: string;
-        email?: string;
+        username: string;
+        avatar?: string | null;
     };
 }
 
-export const getSession = async () => {
-    const cookie = await getIronSession<SessionContent>(await cookies(), {
-        cookieName: "cookie-name",
-        password: process.env.SESSION_SECRET!,
-    });
-    return cookie;
+const sessionOptions = {
+    password: process.env.SESSION_SECRET as string,
+    cookieName: "carrot-market-session",
+    cookieOptions: {
+        secure: process.env.NODE_ENV === "production",
+    },
+};
+
+export async function getSession() {
+    const cookieStore = await cookies();
+    const session = await getIronSession<SessionContent>(cookieStore, sessionOptions);
+    return session;
 }
 
 export type { SessionContent };   

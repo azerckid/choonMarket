@@ -6,6 +6,7 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import { formatUsername, formatToTimeAgo } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import db from "@/lib/db";
 
 // Supabase 클라이언트 초기화 확인
 console.log("ChatClient component initialized");
@@ -20,6 +21,7 @@ interface Message {
         username: string;
         avatar: string | null;
     };
+    status: string;
 }
 
 interface ChatClientProps {
@@ -100,23 +102,46 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
             })
             .on('broadcast', { event: 'new_message' }, ({ payload }) => {
                 console.log('Received broadcast message:', payload);
-                // 메시지 작성자 찾기
-                const messageUser = chatRoom.users.find(user => user.id === payload.userId);
-                console.log('Found message user:', messageUser);
 
-                // 새 메시지를 기존 메시지 목록에 추가
-                const newMessage = {
-                    id: payload.id,
-                    payload: payload.payload,
-                    createdAt: new Date(payload.createdAt),
-                    user: messageUser || {
-                        id: payload.userId,
-                        username: payload.username || "",
-                        avatar: payload.avatar || null,
-                    },
-                };
-                console.log('Adding new message with user info:', newMessage);
-                setMessages(prev => [...prev, newMessage]);
+                // 이미 존재하는 메시지인지 확인
+                setMessages(prev => {
+                    // 이미 동일한 ID의 메시지가 있는지 확인
+                    if (prev.some(msg => msg.id === payload.id)) {
+                        console.log('Message already exists, skipping:', payload.id);
+                        return prev;
+                    }
+
+                    // 메시지 작성자 찾기
+                    const messageUser = chatRoom.users.find(user => user.id === payload.userId);
+                    console.log('Found message user:', messageUser);
+
+                    // 새 메시지를 기존 메시지 목록에 추가
+                    const newMessage = {
+                        id: payload.id,
+                        payload: payload.payload,
+                        createdAt: new Date(payload.createdAt),
+                        user: messageUser || {
+                            id: payload.userId,
+                            username: payload.username || "",
+                            avatar: payload.avatar || null,
+                        },
+                        status: "sent",
+                    };
+                    console.log('Adding new message with user info:', newMessage);
+                    return [...prev, newMessage];
+                });
+            })
+            .on('broadcast', { event: 'message_read' }, ({ payload }) => {
+                console.log('Message read event received:', payload);
+                console.log('Current messages before update:', messages);
+                setMessages(prev => {
+                    console.log('Previous messages in setMessages:', prev);
+                    const updatedMessages = prev.map(msg =>
+                        msg.id === payload.messageId ? { ...msg, status: "read" } : msg
+                    );
+                    console.log('Updated messages in setMessages:', updatedMessages);
+                    return updatedMessages;
+                });
             })
             .subscribe(async (status, err) => {
                 console.log('Subscription status:', status);
@@ -140,6 +165,34 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
         };
     }, [chatRoom.id, currentUser.id]);
 
+    useEffect(() => {
+        // 메시지가 화면에 표시될 때 상태를 '읽음'으로 업데이트
+        const updateMessageStatus = async () => {
+            const unreadMessages = messages.filter(msg => msg.user.id !== currentUser.id && msg.status === "sent");
+            console.log('Unread messages to update:', unreadMessages);
+            for (const msg of unreadMessages) {
+                try {
+                    console.log('Updating message status for message ID:', msg.id);
+                    const response = await fetch(`/api/messages/${msg.id}/read`, { method: 'POST' });
+                    const data = await response.json();
+                    console.log('Message status update response:', data);
+
+                    // 메시지 상태 업데이트 후 브로드캐스팅
+                    const channel = supabase.channel(`chat_${chatRoom.id}`);
+                    await channel.send({
+                        type: 'broadcast',
+                        event: 'message_read',
+                        payload: { messageId: msg.id }
+                    });
+                    console.log('Broadcasted message_read event for message ID:', msg.id);
+                } catch (error) {
+                    console.error('Error updating message status:', error);
+                }
+            }
+        };
+        updateMessageStatus();
+    }, [messages, currentUser.id, chatRoom.id]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!message.trim()) return;
@@ -159,20 +212,8 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
                 return;
             }
 
-            // 새 메시지를 목록에 추가
+            // 새 메시지를 목록에 추가하지 않고 브로드캐스팅만 수행
             if (result.message) {
-                const newMessage = {
-                    id: result.message.id,
-                    payload: result.message.payload,
-                    createdAt: new Date(result.message.createdAt),
-                    user: {
-                        id: currentUser.id,
-                        username: currentUser.username || "",
-                        avatar: currentUser.avatar || null,
-                    },
-                };
-                setMessages(prev => [...prev, newMessage]);
-
                 // 브로드캐스팅으로 메시지 전송
                 const channel = supabase.channel(`chat_${chatRoom.id}`);
                 await channel.send({
@@ -224,21 +265,23 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
                                 )}
                             </div>
                         )}
-                        {msg.user.id === currentUser.id ? (
-                            <div className="max-w-[70%] rounded-lg p-3 bg-blue-500 text-white">
-                                <p className="text-sm">{msg.payload}</p>
-                                <span className="text-xs opacity-70">
-                                    {formatToTimeAgo(msg.createdAt.toString())}
-                                </span>
-                            </div>
-                        ) : (
-                            <div className="max-w-[70%] rounded-lg p-3 bg-neutral-800">
-                                <p className="text-sm">{msg.payload}</p>
-                                <span className="text-xs opacity-70">
-                                    {formatToTimeAgo(msg.createdAt.toString())}
-                                </span>
-                            </div>
-                        )}
+                        <div className={`flex flex-col ${msg.user.id === currentUser.id ? "items-end" : ""}`}>
+                            {msg.user.id === currentUser.id ? (
+                                <div className="max-w-[70%] rounded-lg px-3 py-2 bg-blue-500 text-white break-words">
+                                    <p className="text-sm text-right">{msg.payload}</p>
+                                    <p className="text-xs text-gray-300 mt-1 text-right">
+                                        {msg.status === "read" ? "읽음" : "전송됨"}
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="max-w-[70%] rounded-lg px-3 py-2 bg-gray-100 text-black">
+                                    <p className="text-sm">{msg.payload}</p>
+                                </div>
+                            )}
+                            <p className="text-xs text-gray-500 mt-1">
+                                {formatToTimeAgo(msg.createdAt.toString())}
+                            </p>
+                        </div>
                     </div>
                 ))}
                 <div ref={messagesEndRef} />

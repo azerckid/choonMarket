@@ -115,14 +115,13 @@ model ChatRoom {
 }
 
 model Message {
-  id      Int    @id @default(autoincrement())
-  payload String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  room       ChatRoom @relation(fields: [chatRoomId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  id         String   @id @default(uuid())
+  payload    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   chatRoomId String
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
   userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  status     String   @default("sent")
 }
