@@ -16,6 +16,7 @@ interface Message {
     payload: string;
     createdAt: Date;
     status: string;
+    user?: User;
 }
 
 interface ChatRoom {
@@ -26,6 +27,7 @@ interface ChatRoom {
     users: User[];
     messages: Message[];
     unreadCount?: number;
+    lastMessageUser?: User;
 }
 
 export async function getCurrentSession() {
@@ -59,12 +61,14 @@ export async function getChatRooms(): Promise<ChatRoom[]> {
                 orderBy: {
                     createdAt: 'desc'
                 },
-                select: {
-                    id: true,
-                    payload: true,
-                    createdAt: true,
-                    status: true,
-                    userId: true
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            username: true,
+                            avatar: true
+                        }
+                    }
                 }
             }
         },
@@ -86,7 +90,8 @@ export async function getChatRooms(): Promise<ChatRoom[]> {
 
             return {
                 ...room,
-                unreadCount
+                unreadCount,
+                lastMessageUser: room.messages[0]?.user || null
             };
         })
     );
@@ -155,4 +160,31 @@ export async function deleteChatRoom(chatRoomId: string) {
 
     revalidatePath("/chat");
     return { success: true };
+}
+
+export async function revalidateChatList() {
+    revalidatePath("/chat");
+}
+
+export async function getTotalUnreadMessages(): Promise<number> {
+    const session = await getSession();
+    if (!session?.user?.id) return 0;
+
+    const userId = session.user.id;
+
+    const totalUnread = await db.message.count({
+        where: {
+            userId: { not: userId },
+            status: "sent",
+            chatRoom: {
+                users: {
+                    some: {
+                        id: userId
+                    }
+                }
+            }
+        }
+    });
+
+    return totalUnread;
 } 

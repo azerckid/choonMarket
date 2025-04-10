@@ -82,15 +82,23 @@ export async function sendMessage(formData: FormData) {
         };
     }
 
-    const message = await db.message.create({
-        data: {
-            payload: content.toString(),
-            chatRoomId: chatRoomId.toString(),
-            userId: session.user!.id,
-            status: "sent",
-        },
-    });
+    // 트랜잭션으로 메시지 생성과 채팅방 업데이트를 함께 처리
+    const [message] = await db.$transaction([
+        db.message.create({
+            data: {
+                payload: content.toString(),
+                chatRoomId: chatRoomId.toString(),
+                userId: session.user!.id,
+                status: "sent",
+            },
+        }),
+        db.chatRoom.update({
+            where: { id: chatRoomId.toString() },
+            data: { updatedAt: new Date() },
+        }),
+    ]);
 
     revalidatePath(`/chat/${chatRoomId}`);
+    revalidatePath("/chat"); // 채팅방 목록도 새로고침
     return { message };
 } 

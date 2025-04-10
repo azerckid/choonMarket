@@ -18,6 +18,10 @@ interface ChatRoom {
         payload: string;
     }[];
     unreadCount: number;
+    lastMessageUser?: {
+        avatar: string | null;
+        username: string;
+    };
 }
 
 export default async function ChatPage() {
@@ -52,12 +56,12 @@ export default async function ChatPage() {
                                     <Link href={`/chat/${room.id}`} className="block">
                                         <div className="p-4">
                                             <div className="flex items-start gap-4">
-                                                {/* 상대방 아바타 */}
+                                                {/* 최신 메시지 작성자의 아바타 */}
                                                 <div className="w-12 h-12 relative overflow-hidden rounded-full bg-neutral-200">
-                                                    {otherUser?.avatar ? (
+                                                    {room.lastMessageUser?.avatar ? (
                                                         <Image
-                                                            src={otherUser.avatar}
-                                                            alt={otherUser.username}
+                                                            src={room.lastMessageUser.avatar}
+                                                            alt={room.lastMessageUser.username}
                                                             fill
                                                             className="object-cover"
                                                         />

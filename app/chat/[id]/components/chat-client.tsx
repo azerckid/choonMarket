@@ -7,6 +7,8 @@ import Image from "next/image";
 import { formatUsername, formatToTimeAgo } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import db from "@/lib/db";
+import { useParams } from "next/navigation";
+import { revalidateChatList } from "@/app/(tabs)/chat/action";
 
 // Supabase 클라이언트 초기화 확인
 console.log("ChatClient component initialized");
@@ -48,6 +50,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const params = useParams();
 
     // 메시지 목록 초기화
     useEffect(() => {
@@ -162,6 +165,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
         return () => {
             console.log('Cleaning up subscription');
             supabase.removeChannel(channel);
+            revalidateChatList();
         };
     }, [chatRoom.id, currentUser.id]);
 

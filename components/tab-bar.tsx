@@ -16,9 +16,21 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getTotalUnreadMessages } from "@/app/(tabs)/chat/action";
 
 export default function TabBar() {
     const pathname = usePathname();
+    const [unreadCount, setUnreadCount] = useState<number>(0);
+
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            const count = await getTotalUnreadMessages();
+            setUnreadCount(count);
+        };
+
+        fetchUnreadCount();
+    }, []);
 
     // add 페이지에서는 TabBar를 보여주지 않음
     if (pathname === "/home/add") {
@@ -53,7 +65,7 @@ export default function TabBar() {
             </Link>
             <Link
                 href="/chat"
-                className={`flex flex-col items-center gap-1 ${pathname === "/chat" ? "text-orange-500" : "text-neutral-500"
+                className={`flex flex-col items-center gap-1 relative ${pathname === "/chat" ? "text-orange-500" : "text-neutral-500"
                     }`}
             >
                 {pathname === "/chat" ? (
@@ -62,6 +74,11 @@ export default function TabBar() {
                     <OutlineChatIcon className="w-6 h-6" />
                 )}
                 <span>채팅</span>
+                {unreadCount > 0 && (
+                    <span className="absolute -top-2 right-10 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center z-10">
+                        {unreadCount}
+                    </span>
+                )}
             </Link>
             <Link
                 href="/live"
@@ -87,7 +104,6 @@ export default function TabBar() {
                 )}
                 <span>나의 당근</span>
             </Link>
-
         </div>
     );
 }
