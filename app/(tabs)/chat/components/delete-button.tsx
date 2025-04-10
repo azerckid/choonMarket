@@ -20,6 +20,7 @@ export default function DeleteButton({ chatRoomId }: DeleteButtonProps) {
         <>
             <button
                 onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     setIsModalOpen(true);
                 }}

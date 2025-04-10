@@ -25,6 +25,7 @@ interface ChatRoom {
     productId: number;
     users: User[];
     messages: Message[];
+    unreadCount?: number;
 }
 
 export async function getCurrentSession() {
@@ -35,11 +36,13 @@ export async function getChatRooms(): Promise<ChatRoom[]> {
     const session = await getSession();
     if (!session?.user?.id) return [];
 
+    const userId = session.user.id;
+
     const rooms = await db.chatRoom.findMany({
         where: {
             users: {
                 some: {
-                    id: session.user.id
+                    id: userId
                 }
             }
         },
@@ -60,7 +63,8 @@ export async function getChatRooms(): Promise<ChatRoom[]> {
                     id: true,
                     payload: true,
                     createdAt: true,
-                    status: true
+                    status: true,
+                    userId: true
                 }
             }
         },
@@ -69,7 +73,25 @@ export async function getChatRooms(): Promise<ChatRoom[]> {
         }
     });
 
-    return rooms as ChatRoom[];
+    // 각 채팅방의 읽지 않은 메시지 개수 계산
+    const roomsWithUnreadCounts = await Promise.all(
+        rooms.map(async (room) => {
+            const unreadCount = await db.message.count({
+                where: {
+                    chatRoomId: room.id,
+                    userId: { not: userId },
+                    status: "sent"
+                }
+            });
+
+            return {
+                ...room,
+                unreadCount
+            };
+        })
+    );
+
+    return roomsWithUnreadCounts as ChatRoom[];
 }
 
 export async function getUnreadMessageCounts(roomIds: string[], userId: number): Promise<Record<string, number>> {

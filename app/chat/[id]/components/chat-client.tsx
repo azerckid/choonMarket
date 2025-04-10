@@ -245,14 +245,14 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
                     {error}
                 </div>
             )}
-            <div className="flex-1 overflow-y-auto space-y-4 p-4">
+            <div className="flex-1 overflow-y-auto space-y-4 p-4 scrollbar-hide">
                 {messages.map((msg, index) => (
                     <div
                         key={`${msg.id}-${index}`}
                         className={`flex items-start gap-2 ${msg.user.id === currentUser.id ? "justify-end" : ""}`}
                     >
                         {msg.user.id !== currentUser.id && (
-                            <div className="relative size-8 overflow-hidden rounded-full">
+                            <div className="w-10 h-10 mr-2 ml-2 p-5 relative overflow-hidden rounded-full">
                                 {msg.user.avatar ? (
                                     <Image
                                         src={msg.user.avatar}
@@ -267,15 +267,15 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
                         )}
                         <div className={`flex flex-col ${msg.user.id === currentUser.id ? "items-end" : ""}`}>
                             {msg.user.id === currentUser.id ? (
-                                <div className="max-w-[70%] rounded-lg px-3 py-2 bg-blue-500 text-white break-words">
-                                    <p className="text-sm text-right">{msg.payload}</p>
+                                <div className="max-w-[100%] rounded-lg px-3 py-2 bg-blue-500 text-white">
+                                    <p className="text-sm text-right break-words whitespace-normal">{msg.payload}</p>
                                     <p className="text-xs text-gray-300 mt-1 text-right">
                                         {msg.status === "read" ? "읽음" : "전송됨"}
                                     </p>
                                 </div>
                             ) : (
-                                <div className="max-w-[70%] rounded-lg px-3 py-2 bg-gray-100 text-black">
-                                    <p className="text-sm">{msg.payload}</p>
+                                <div className="max-w-[100%] rounded-lg px-3 py-2 bg-gray-100 text-black">
+                                    <p className="text-sm break-words whitespace-normal">{msg.payload}</p>
                                 </div>
                             )}
                             <p className="text-xs text-gray-500 mt-1">
