@@ -172,11 +172,11 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
     useEffect(() => {
         // 메시지가 화면에 표시될 때 상태를 '읽음'으로 업데이트
         const updateMessageStatus = async () => {
-            const unreadMessages = messages.filter(msg => msg.user.id !== currentUser.id && msg.status === "sent");
-            console.log('Unread messages to update:', unreadMessages);
+            const unreadMessages = messages.filter(msg =>
+                msg.user.id !== currentUser.id && msg.status === "sent"
+            );
             for (const msg of unreadMessages) {
                 try {
-                    console.log('Updating message status for message ID:', msg.id);
                     const response = await fetch(`/api/messages/${msg.id}/read`, { method: 'POST' });
                     const data = await response.json();
                     console.log('Message status update response:', data);
@@ -195,7 +195,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
             }
         };
         updateMessageStatus();
-    }, [messages, currentUser.id, chatRoom.id]);
+    }, [currentUser.id, chatRoom.id]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
