@@ -13,6 +13,11 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        roboto: "var(--roboto-text)",
+        rubick: "var(--rubick-text)",
+        metallica: "var(--metallica-text)",
+      },
     },
   },
   plugins: [formsPlugin],
