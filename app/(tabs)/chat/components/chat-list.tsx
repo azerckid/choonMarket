@@ -4,55 +4,7 @@ import Link from "next/link";
 import { formatUsername } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-
-// 타입 정의
-interface User {
-    id: number;
-    username: string;
-    avatar: string | null;
-}
-
-interface Message {
-    id: string;
-    payload: string;
-    createdAt: Date;
-    status: string;
-}
-interface MessagePayload {
-    id: string;
-    payload: string;
-    createdAt: string;
-    userId: number;
-    username: string;
-    avatar: string | null;
-}
-
-interface ChatRoom {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    productId: number;
-    users: User[];
-    messages: Message[];
-}
-
-interface UnreadCounts {
-    [key: string]: number;
-}
-
-interface Session {
-    user?: {
-        id: number;
-        username: string;
-        avatar?: string | null;
-    };
-}
-
-interface ChatListProps {
-    initialRooms: ChatRoom[];
-    initialUnreadCounts: UnreadCounts;
-    session: Session;
-}
+import { ChatListProps, ChatRoom, MessagePayload, UnreadCounts } from "../types";
 
 export default function ChatList({ initialRooms, initialUnreadCounts, session }: ChatListProps) {
     const [rooms, setRooms] = useState<ChatRoom[]>(initialRooms);

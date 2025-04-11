@@ -1,48 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { sendMessage } from "../action";
-import { UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
-import { formatUsername, formatToTimeAgo } from "@/lib/utils";
+import { sendMessage } from "../action";
 import { supabase } from "@/lib/supabase";
-// import db from "@/lib/db";
-// import { useParams } from "next/navigation";
+import { formatUsername, formatToTimeAgo } from "@/lib/utils";
+import { UserIcon } from "@heroicons/react/24/solid";
 import { revalidateChatList } from "@/app/(tabs)/chat/action";
-
-// Supabase 클라이언트 초기화 확인
-console.log("ChatClient component initialized");
-console.log("Supabase client:", supabase);
-
-interface Message {
-    id: string;
-    payload: string;
-    createdAt: Date;
-    user: {
-        id: number;
-        username: string;
-        avatar: string | null;
-    };
-    status: string;
-}
-
-interface ChatClientProps {
-    chatRoom: {
-        id: string;
-        users: {
-            id: number;
-            username: string;
-            avatar: string | null;
-        }[];
-        messages: Message[];
-    };
-    currentUser: {
-        id: number;
-        username?: string;
-        email?: string;
-        avatar?: string | null;
-    };
-}
+import { Message, ChatClientProps } from "../types";
 
 export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
     const [message, setMessage] = useState("");
