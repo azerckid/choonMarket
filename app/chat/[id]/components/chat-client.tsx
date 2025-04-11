@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { sendMessage } from "../action";
 import { supabase } from "@/lib/supabase";
 import { formatUsername, formatToTimeAgo } from "@/lib/utils";
 import { UserIcon } from "@heroicons/react/24/solid";
-import { revalidateChatList } from "@/app/(tabs)/chat/action";
 import { Message, ChatClientProps } from "../types";
+import { revalidateChatList } from "@/app/(tabs)/chat/action";
 
 export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
     const [message, setMessage] = useState("");
@@ -15,6 +15,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const processedMessageIds = useRef<Set<string>>(new Set());
 
     // 메시지 목록 초기화
     useEffect(() => {
@@ -45,7 +46,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // Supabase Realtime 구독 설정
+    // Supabase 구독 설정
     useEffect(() => {
         console.log("Setting up Supabase Realtime subscription for chat room:", chatRoom.id);
 
@@ -70,7 +71,6 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
             .on('broadcast', { event: 'new_message' }, ({ payload }) => {
                 console.log('Received broadcast message:', payload);
 
-                // 이미 존재하는 메시지인지 확인
                 setMessages(prev => {
                     // 이미 동일한 ID의 메시지가 있는지 확인
                     if (prev.some(msg => msg.id === payload.id)) {
@@ -100,7 +100,6 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
             })
             .on('broadcast', { event: 'message_read' }, ({ payload }) => {
                 console.log('Message read event received:', payload);
-                console.log('Current messages before update:', messages);
                 setMessages(prev => {
                     console.log('Previous messages in setMessages:', prev);
                     const updatedMessages = prev.map(msg =>
@@ -131,35 +130,55 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
             supabase.removeChannel(channel);
             revalidateChatList();
         };
-    }, [chatRoom.id, currentUser.id, chatRoom.users, messages]);
+    }, [chatRoom.id, currentUser.id]);
 
+    // 메시지 상태 업데이트 - 최초 읽음 상태 업데이트만 수행
     useEffect(() => {
-        // 메시지가 화면에 표시될 때 상태를 '읽음'으로 업데이트
-        const updateMessageStatus = async () => {
+        const updateInitialMessageStatus = async () => {
+            // 아직 읽지 않은 메시지만 필터링
             const unreadMessages = messages.filter(msg =>
-                msg.user.id !== currentUser.id && msg.status === "sent"
+                msg.user.id !== currentUser.id &&
+                msg.status === "sent" &&
+                !processedMessageIds.current.has(msg.id)
             );
-            for (const msg of unreadMessages) {
-                try {
-                    const response = await fetch(`/api/messages/${msg.id}/read`, { method: 'POST' });
-                    const data = await response.json();
-                    console.log('Message status update response:', data);
 
-                    // 메시지 상태 업데이트 후 브로드캐스팅
-                    const channel = supabase.channel(`chat_${chatRoom.id}`);
-                    await channel.send({
-                        type: 'broadcast',
-                        event: 'message_read',
-                        payload: { messageId: msg.id }
-                    });
-                    console.log('Broadcasted message_read event for message ID:', msg.id);
-                } catch (error) {
-                    console.error('Error updating message status:', error);
+            // 읽지 않은 메시지가 있을 때만 처리
+            if (unreadMessages.length > 0) {
+                console.log('Processing unread messages:', unreadMessages.length);
+                for (const msg of unreadMessages) {
+                    try {
+                        // 이미 처리된 메시지인지 다시 한번 확인
+                        if (processedMessageIds.current.has(msg.id)) {
+                            console.log('Message already processed, skipping:', msg.id);
+                            continue;
+                        }
+
+                        // 처리된 메시지로 표시
+                        processedMessageIds.current.add(msg.id);
+                        console.log('Marking message as processed:', msg.id);
+
+                        // 최초 읽음 상태 업데이트를 위한 POST 요청
+                        const response = await fetch(`/api/messages/${msg.id}/read`, { method: 'POST' });
+                        const data = await response.json();
+                        console.log('Initial message status update:', data);
+
+                        // 읽음 상태 브로드캐스팅
+                        const channel = supabase.channel(`chat_${chatRoom.id}`);
+                        await channel.send({
+                            type: 'broadcast',
+                            event: 'message_read',
+                            payload: { messageId: msg.id }
+                        });
+                    } catch (error) {
+                        console.error('Error updating initial message status:', error);
+                    }
                 }
             }
         };
-        updateMessageStatus();
-    }, [currentUser.id, chatRoom.id, messages]);
+
+        // 컴포넌트 마운트 시 한 번만 실행
+        updateInitialMessageStatus();
+    }, []); // 빈 의존성 배열로 마운트 시 한 번만 실행
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
