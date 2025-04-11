@@ -1,5 +1,44 @@
 "use client";
 
+/**
+ * ChatClient Component
+ * 
+ * 실시간 채팅 클라이언트 컴포넌트입니다. Supabase Realtime을 사용하여 실시간 메시지 통신을 구현합니다.
+ * 
+ * 주요 기능:
+ * 1. 실시간 메시지 송수신
+ * 2. 메시지 읽음 상태 관리
+ * 3. 사용자 presence 관리
+ * 4. 자동 스크롤
+ * 
+ * 상태 관리:
+ * - message: 현재 입력 중인 메시지
+ * - messages: 채팅방의 모든 메시지 목록
+ * - isConnected: Supabase 연결 상태
+ * - error: 에러 메시지
+ * 
+ * Refs:
+ * - messagesEndRef: 스크롤 위치 참조
+ * - processedMessageIds: 처리된 메시지 ID 추적 (폴링 방지)
+ * 
+ * 최적화:
+ * - useRef를 사용하여 처리된 메시지 상태를 추적하여 불필요한 폴링 방지
+ * - 컴포넌트 마운트 시에만 메시지 상태 업데이트 수행
+ * - 메시지 중복 처리 방지
+ * 
+ * Props:
+ * @param {Object} chatRoom - 채팅방 정보 (id, messages, users)
+ * @param {Object} currentUser - 현재 사용자 정보
+ * 
+ * 사용 예시:
+ * ```tsx
+ * <ChatClient 
+ *   chatRoom={{ id: "1", messages: [], users: [] }}
+ *   currentUser={{ id: "1", username: "user" }}
+ * />
+ * ```
+ */
+
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { sendMessage } from "../action";
@@ -17,7 +56,10 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
     const [error, setError] = useState<string | null>(null);
     const processedMessageIds = useRef<Set<string>>(new Set());
 
-    // 메시지 목록 초기화
+    /**
+     * 메시지 목록 초기화
+     * 채팅방의 초기 메시지에 사용자 정보를 추가하여 상태를 설정합니다.
+     */
     useEffect(() => {
         console.log('Chat room users:', chatRoom.users);
         console.log('Initial messages:', chatRoom.messages);
@@ -41,12 +83,18 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
         setMessages(messagesWithUserInfo);
     }, [chatRoom.messages, chatRoom.users]);
 
-    // 스크롤 자동 이동
+    /**
+     * 스크롤 자동 이동
+     * 새 메시지가 추가될 때마다 스크롤을 최하단으로 이동합니다.
+     */
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // Supabase 구독 설정
+    /**
+     * Supabase 실시간 구독 설정
+     * 채팅방의 실시간 이벤트(새 메시지, 읽음 상태 변경 등)를 구독합니다.
+     */
     useEffect(() => {
         console.log("Setting up Supabase Realtime subscription for chat room:", chatRoom.id);
 
@@ -132,7 +180,11 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
         };
     }, [chatRoom.id, currentUser.id]);
 
-    // 메시지 상태 업데이트 - 최초 읽음 상태 업데이트만 수행
+    /**
+     * 메시지 상태 업데이트
+     * 읽지 않은 메시지의 상태를 '읽음'으로 업데이트합니다.
+     * useRef를 사용하여 이미 처리된 메시지는 다시 처리하지 않도록 합니다.
+     */
     useEffect(() => {
         const updateInitialMessageStatus = async () => {
             // 아직 읽지 않은 메시지만 필터링
@@ -180,6 +232,11 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
         updateInitialMessageStatus();
     }, []); // 빈 의존성 배열로 마운트 시 한 번만 실행
 
+    /**
+     * 메시지 전송 처리
+     * 새 메시지를 서버에 전송하고 실시간으로 브로드캐스팅합니다.
+     * @param {React.FormEvent<HTMLFormElement>} e - 폼 제출 이벤트
+     */
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!message.trim()) return;

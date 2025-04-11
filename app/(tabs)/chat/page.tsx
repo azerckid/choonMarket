@@ -6,24 +6,6 @@ import DeleteButton from "./components/delete-button";
 import Image from "next/image";
 import { UserIcon } from "@heroicons/react/24/solid";
 
-// interface ChatRoom {
-//     id: string;
-//     updatedAt: Date;
-//     users: {
-//         id: number;
-//         username: string;
-//         avatar: string | null;
-//     }[];
-//     messages: {
-//         payload: string;
-//     }[];
-//     unreadCount: number;
-//     lastMessageUser?: {
-//         avatar: string | null;
-//         username: string;
-//     };
-// }
-
 export default async function ChatPage() {
     const session = await getSession();
     if (!session?.user?.id) {
@@ -36,8 +18,6 @@ export default async function ChatPage() {
 
     const userId = session.user.id;
     const chatRooms = await getChatRooms();
-
-    console.log('chatRooms', chatRooms);
 
     return (
         <div className="flex-1 flex flex-col">

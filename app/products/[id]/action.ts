@@ -4,7 +4,10 @@ import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 
-// 세션 확인 헬퍼 함수
+/**
+ * Checks if the user is logged in and returns the session
+ * @returns {Promise<{error?: string, session?: any}>} Session information or error
+ */
 async function checkSession() {
     const session = await getSession();
     if (!session?.user?.id) {
@@ -16,7 +19,11 @@ async function checkSession() {
     return { session };
 }
 
-// 제품 조회 헬퍼 함수
+/**
+ * Retrieves a product by its ID
+ * @param {number} id - The ID of the product to retrieve
+ * @returns {Promise<{error?: string, product?: any}>} Product information or error
+ */
 async function getProductById(id: number) {
     const product = await db.product.findUnique({
         where: {
@@ -37,6 +44,11 @@ async function getProductById(id: number) {
     return { product };
 }
 
+/**
+ * Checks if the current user is the owner of a product
+ * @param {number} userId - The ID of the product owner
+ * @returns {Promise<boolean>} True if the current user is the owner, false otherwise
+ */
 export async function getIsOwner(userId: number) {
     const { session } = await checkSession();
     if (!session) return false;
@@ -44,6 +56,11 @@ export async function getIsOwner(userId: number) {
     return session.user!.id === userId;
 }
 
+/**
+ * Retrieves a product by its ID with user information
+ * @param {number} id - The ID of the product to retrieve
+ * @returns {Promise<any>} The product data or null if not found
+ */
 export async function getProduct(id: number) {
     const product = await db.product.findUnique({
         where: {
@@ -61,6 +78,11 @@ export async function getProduct(id: number) {
     return product;
 }
 
+/**
+ * Deletes a product if the current user is the owner
+ * @param {number} id - The ID of the product to delete
+ * @returns {Promise<{error?: string, success?: boolean}>} Success or error information
+ */
 export async function deleteProduct(id: number) {
     const { session, error } = await checkSession();
     if (error) return { error };
@@ -86,6 +108,11 @@ export async function deleteProduct(id: number) {
     };
 }
 
+/**
+ * Creates a chat room for a product or returns an existing one
+ * @param {string} productId - The ID of the product as a string
+ * @returns {Promise<{error?: string, roomId?: number}>} Chat room ID or error
+ */
 export async function createChatRoom(productId: string) {
     const { session, error } = await checkSession();
     if (error) return { error };

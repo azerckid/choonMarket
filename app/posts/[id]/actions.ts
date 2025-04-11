@@ -6,6 +6,11 @@ import { revalidatePath } from "next/cache";
 import { unstable_noStore as noStore } from "next/cache";
 import { Comment } from "./types";
 
+/**
+ * Increments the view count for a specific post
+ * @param {number} id - The ID of the post to increment views for
+ * @returns {Promise<void>}
+ */
 export async function incrementViews(id: number) {
     await db.post.update({
         where: { id },
@@ -14,11 +19,17 @@ export async function incrementViews(id: number) {
     revalidatePath(`/posts/${id}`);
 }
 
+/**
+ * Adds a like to a post for the current user
+ * @param {FormData} formData - Form data containing the postId
+ * @throws {Error} If user is not logged in
+ * @returns {Promise<void>}
+ */
 export async function likePost(formData: FormData) {
     const postId = Number(formData.get("postId"));
     const session = await getSession();
     if (!session?.user?.id) {
-        return { error: "로그인이 필요합니다." };
+        throw new Error("로그인이 필요합니다.");
     }
     const userId = session.user.id;
     try {
@@ -34,11 +45,17 @@ export async function likePost(formData: FormData) {
     }
 }
 
+/**
+ * Removes a like from a post for the current user
+ * @param {FormData} formData - Form data containing the postId
+ * @throws {Error} If user is not logged in
+ * @returns {Promise<void>}
+ */
 export async function dislikePost(formData: FormData) {
     const postId = Number(formData.get("postId"));
     const session = await getSession();
     if (!session?.user?.id) {
-        return { error: "로그인이 필요합니다." };
+        throw new Error("로그인이 필요합니다.");
     }
     const userId = session.user.id;
     try {
@@ -56,7 +73,12 @@ export async function dislikePost(formData: FormData) {
     }
 }
 
-// Get comments for a post
+/**
+ * Retrieves all comments for a specific post
+ * @param {number} postId - The ID of the post to get comments for
+ * @returns {Promise<Comment[]>} Array of comments with user information
+ * @throws {Error} If comments cannot be fetched
+ */
 export async function getComments(postId: number): Promise<Comment[]> {
     noStore();
 
@@ -85,7 +107,13 @@ export async function getComments(postId: number): Promise<Comment[]> {
     }
 }
 
-// Create a new comment
+/**
+ * Creates a new comment on a post
+ * @param {number} postId - The ID of the post to comment on
+ * @param {string} content - The content of the comment
+ * @returns {Promise<Comment>} The newly created comment with user information
+ * @throws {Error} If user is not authenticated, content is invalid, or post doesn't exist
+ */
 export async function createComment(postId: number, content: string): Promise<Comment> {
     try {
         const session = await getSession();
