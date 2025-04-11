@@ -6,8 +6,8 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import { formatUsername, formatToTimeAgo } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
-import db from "@/lib/db";
-import { useParams } from "next/navigation";
+// import db from "@/lib/db";
+// import { useParams } from "next/navigation";
 import { revalidateChatList } from "@/app/(tabs)/chat/action";
 
 // Supabase 클라이언트 초기화 확인
@@ -15,7 +15,7 @@ console.log("ChatClient component initialized");
 console.log("Supabase client:", supabase);
 
 interface Message {
-    id: number;
+    id: string;
     payload: string;
     createdAt: Date;
     user: {
@@ -40,7 +40,7 @@ interface ChatClientProps {
         id: number;
         username?: string;
         email?: string;
-        avatar?: string;
+        avatar?: string | null;
     };
 }
 
@@ -50,7 +50,6 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const params = useParams();
 
     // 메시지 목록 초기화
     useEffect(() => {
@@ -167,7 +166,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
             supabase.removeChannel(channel);
             revalidateChatList();
         };
-    }, [chatRoom.id, currentUser.id]);
+    }, [chatRoom.id, currentUser.id, chatRoom.users, messages]);
 
     useEffect(() => {
         // 메시지가 화면에 표시될 때 상태를 '읽음'으로 업데이트
@@ -195,7 +194,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
             }
         };
         updateMessageStatus();
-    }, [currentUser.id, chatRoom.id]);
+    }, [currentUser.id, chatRoom.id, messages]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -241,6 +240,8 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
             setError('메시지 전송 중 오류가 발생했습니다.');
         }
     };
+
+    console.log('isConnected', isConnected);
 
     return (
         <div className="flex flex-col h-full">

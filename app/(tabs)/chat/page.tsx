@@ -6,23 +6,23 @@ import DeleteButton from "./components/delete-button";
 import Image from "next/image";
 import { UserIcon } from "@heroicons/react/24/solid";
 
-interface ChatRoom {
-    id: string;
-    updatedAt: Date;
-    users: {
-        id: number;
-        username: string;
-        avatar: string | null;
-    }[];
-    messages: {
-        payload: string;
-    }[];
-    unreadCount: number;
-    lastMessageUser?: {
-        avatar: string | null;
-        username: string;
-    };
-}
+// interface ChatRoom {
+//     id: string;
+//     updatedAt: Date;
+//     users: {
+//         id: number;
+//         username: string;
+//         avatar: string | null;
+//     }[];
+//     messages: {
+//         payload: string;
+//     }[];
+//     unreadCount: number;
+//     lastMessageUser?: {
+//         avatar: string | null;
+//         username: string;
+//     };
+// }
 
 export default async function ChatPage() {
     const session = await getSession();
@@ -36,6 +36,8 @@ export default async function ChatPage() {
 
     const userId = session.user.id;
     const chatRooms = await getChatRooms();
+
+    console.log('chatRooms', chatRooms);
 
     return (
         <div className="flex-1 flex flex-col">
@@ -87,7 +89,7 @@ export default async function ChatPage() {
                                                         <p className="text-sm text-gray-500 truncate">
                                                             {lastMessage?.payload || "메시지가 없습니다."}
                                                         </p>
-                                                        {room.unreadCount > 0 && (
+                                                        {room?.unreadCount && room.unreadCount > 0 && (
                                                             <span className="ml-2 px-2 py-1 text-xs text-white bg-orange-500 rounded-full">
                                                                 {room.unreadCount}
                                                             </span>

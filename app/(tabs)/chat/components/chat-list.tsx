@@ -18,6 +18,14 @@ interface Message {
     createdAt: Date;
     status: string;
 }
+interface MessagePayload {
+    id: string;
+    payload: string;
+    createdAt: string;
+    userId: number;
+    username: string;
+    avatar: string | null;
+}
 
 interface ChatRoom {
     id: string;
@@ -55,7 +63,7 @@ export default function ChatList({ initialRooms, initialUnreadCounts, session }:
         const channel = supabase.channel('chat_updates');
 
         channel
-            .on('broadcast', { event: 'new_message' }, async ({ payload }: any) => {
+            .on('broadcast', { event: 'new_message' }, async ({ payload }: { payload: MessagePayload }) => {
                 console.log('New message received in chat list:', payload);
 
                 // 채팅방 목록 새로고침
@@ -67,7 +75,7 @@ export default function ChatList({ initialRooms, initialUnreadCounts, session }:
                 if (payload.userId !== session?.user?.id) {
                     setUnreadCounts(prev => ({
                         ...prev,
-                        [payload.chatRoomId]: (prev[payload.chatRoomId] || 0) + 1
+                        [payload.id]: (prev[payload.id] || 0) + 1
                     }));
                 }
             })
