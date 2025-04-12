@@ -47,12 +47,9 @@ export async function POST(
     request: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    console.log("POST request received for product comments");
     const session = await getSession();
-    console.log("Session:", session);
 
     if (!session.user) {
-        console.log("No user session found");
         return NextResponse.json(
             { error: "Authentication required" },
             { status: 401 }
@@ -61,10 +58,8 @@ export async function POST(
 
     const { id: productId } = await params;
     const id = Number(productId);
-    console.log("Product ID:", id);
 
     if (isNaN(id)) {
-        console.log("Invalid product ID");
         return NextResponse.json(
             { error: "Invalid product ID" },
             { status: 400 }
@@ -73,18 +68,15 @@ export async function POST(
 
     try {
         const body = await request.json();
-        console.log("Request body:", body);
 
         const { content } = body;
         if (!content || typeof content !== "string") {
-            console.log("Invalid content");
             return NextResponse.json(
                 { error: "Content is required" },
                 { status: 400 }
             );
         }
 
-        console.log("Creating comment with data:", { content, productId, userId: session.user.id });
         const comment = await db.productComment.create({
             data: {
                 content,
@@ -100,7 +92,6 @@ export async function POST(
                 },
             },
         });
-        console.log("Comment created:", comment);
 
         return NextResponse.json(comment);
     } catch (error) {

@@ -1,6 +1,11 @@
 import { NextConfig } from 'next'
 
 const config: NextConfig = {
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
   images: {
     remotePatterns: [
       {

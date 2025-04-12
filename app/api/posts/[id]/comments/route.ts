@@ -52,13 +52,6 @@ export async function POST(
 ) {
     console.log("POST request received for post comments");
     const session = await getSession();
-    console.log("Session in post comments API:", {
-        exists: !!session,
-        hasUser: !!session.user,
-        userId: session.user?.id,
-        username: session.user?.username,
-        email: session.user?.email
-    });
 
     if (!session.user) {
         console.log("No user session found in post comments API");
@@ -70,7 +63,6 @@ export async function POST(
 
     const { id: postId } = await params;
     const id = Number(postId);
-    console.log("Post ID:", id);
 
     if (isNaN(id)) {
         console.log("Invalid post ID");
@@ -82,11 +74,9 @@ export async function POST(
 
     try {
         const body = await request.json();
-        console.log("Request body:", body);
 
         const { content } = body;
         if (!content || typeof content !== "string") {
-            console.log("Invalid content");
             return NextResponse.json(
                 { error: "Content is required" },
                 { status: 400 }
@@ -109,7 +99,6 @@ export async function POST(
                 },
             },
         });
-        console.log("Comment created:", comment);
 
         revalidatePath(`/posts/${id}`);
         return NextResponse.json(comment);
