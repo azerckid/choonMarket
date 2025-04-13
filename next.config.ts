@@ -1,10 +1,13 @@
 import { NextConfig } from 'next'
 
 const config: NextConfig = {
-  logging: {
-    fetches: {
-      fullUrl: true,
-    },
+  // logging: {
+  //   fetches: {
+  //     fullUrl: true,
+  //   },
+  // },
+  experimental: {
+    taint: true,
   },
   images: {
     remotePatterns: [
