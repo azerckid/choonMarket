@@ -17,6 +17,7 @@ export default function ListProduct({
     photo,
     createdAt,
 }: Product) {
+    console.log(photo);
     return (
         <Link href={`/products/${id}`} className="flex gap-5">
             <Image
@@ -25,6 +26,8 @@ export default function ListProduct({
                 alt={title}
                 width={500}
                 height={500}
+                placeholder="blur"
+                blurDataURL={photo}
             />
             <div className="flex flex-col">
                 <span className="text-lg">{title}</span>
