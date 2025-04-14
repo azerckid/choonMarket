@@ -227,10 +227,8 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
                 }
             }
         };
-
-        // 컴포넌트 마운트 시 한 번만 실행
         updateInitialMessageStatus();
-    }, []); // 빈 의존성 배열로 마운트 시 한 번만 실행
+    }, [messages, chatRoom.id, currentUser.id]);
 
     /**
      * 메시지 전송 처리
