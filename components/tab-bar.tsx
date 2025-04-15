@@ -38,7 +38,7 @@ export default function TabBar() {
     }
 
     return (
-        <div className="fixed bottom-0 w-full mx-auto max-w-screen-sm grid grid-cols-5 border-neutral-600 border-t px-5 py-3 *:text-white bg-neutral-900">
+        <div className="fixed bottom-0 w-full mx-auto max-w-screen-sm grid grid-cols-5 border-neutral-600 border-t px-5 py-3 *:text-white bg-[#205781]">
             <Link
                 href="/home"
                 className={`flex flex-col items-center gap-1 ${pathname === "/home" ? "text-orange-500" : "text-neutral-500"
@@ -102,7 +102,7 @@ export default function TabBar() {
                 ) : (
                     <OutlineUserIcon className="w-6 h-6" />
                 )}
-                <span>나의 당근</span>
+                <span>프로필</span>
             </Link>
         </div>
     );

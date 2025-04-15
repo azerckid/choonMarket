@@ -60,6 +60,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
      * 메시지 목록 초기화
      * 채팅방의 초기 메시지에 사용자 정보를 추가하여 상태를 설정합니다.
      */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         console.log('Chat room users:', chatRoom.users);
         console.log('Initial messages:', chatRoom.messages);

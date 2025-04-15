@@ -44,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${roboto.variable} ${rubick.variable} ${metallica.variable} bg-neutral-900 text-white max-w-screen-sm mx-auto`}
+        className={`${geistSans.variable} ${roboto.variable} ${rubick.variable} ${metallica.variable} text-white max-w-screen-sm mx-auto`}
       >
         <Providers>{children}</Providers>
       </body>
