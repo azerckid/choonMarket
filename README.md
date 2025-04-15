@@ -113,3 +113,7 @@ npm run dev
 프로젝트 관리자 - [이메일 주소]
 
 프로젝트 링크: [https://github.com/yourusername/small-market](https://github.com/yourusername/small-market)
+
+
+##
+ "build": "prisma generate && next build",
