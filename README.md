@@ -115,5 +115,6 @@ npm run dev
 프로젝트 링크: [https://github.com/yourusername/small-market](https://github.com/yourusername/small-market)
 
 
-##
- "build": "prisma generate && next build",
+## db
+npx prisma migrate dev --create-only
+npx prisma migrate deploy
