@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-export function GET() {
+export async function GET() {
     const baseURL = "https://kauth.kakao.com/oauth/authorize";
     const params = {
         client_id: process.env.KAKAO_CLIENT_ID!,

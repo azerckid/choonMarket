@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
-export function GET() {
+export async function GET() {
     const baseURL = "https://github.com/login/oauth/authorize";
     const params = {
         client_id: process.env.GITHUB_CLIENT_ID!,
-        redirect_uri: process.env.AUTH_CALLBACK_URL!,
+        redirect_uri: process.env.GITHUB_CALLBACK_URL!,
         scope: "read:user, user:email",
         allow_signup: "true",
     }

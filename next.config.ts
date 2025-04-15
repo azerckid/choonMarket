@@ -33,8 +33,13 @@ const config: NextConfig = {
         hostname: 'k.kakaocdn.net',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'choon-market.vercel.app',
+        pathname: '/**',
+      }
     ],
-    domains: ['avatars.githubusercontent.com', "localhost", "cloudflare-ipfs.com", "utfs.io", "k.kakaocdn.net"]
+    domains: ['avatars.githubusercontent.com', "localhost", "cloudflare-ipfs.com", "utfs.io", "k.kakaocdn.net", "choon-market.vercel.app"]
   },
   typescript: {
     ignoreBuildErrors: true
