@@ -7,6 +7,22 @@ export default function SocialLogin() {
             <div className="w-full h-px bg-neutral-500"></div>
             <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-center">
+                    <Link href={"/kakao/start"} className="primary-btn flex items-center justify-center gap-3 bg-[#FEE500] text-black hover:bg-[#FDD835]">
+                        <svg
+                            className="size-6"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M12 4C6.477 4 2 7.477 2 12C2 14.991 3.657 17.128 6 18.326V22L9.5 20C10.043 20.05 10.517 20.05 11 20C15.523 20 20 16.523 20 12C20 7.477 15.523 4 12 4Z"
+                                fill="currentColor"
+                            />
+                        </svg>
+                        <span>Continue with Kakao</span>
+                    </Link>
+                </div>
+                <div className="flex items-center justify-center">
                     <Link href={"/github/start"} className="primary-btn flex items-center justify-center gap-3">
                         <svg
                             className="size-6"

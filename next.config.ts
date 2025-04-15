@@ -22,9 +22,19 @@ const config: NextConfig = {
         hostname: 'github.com',
         port: '',
         pathname: '/**',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'k.kakaocdn.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'k.kakaocdn.net',
+        pathname: '/**',
+      },
     ],
-    domains: ['avatars.githubusercontent.com', "localhost", "cloudflare-ipfs.com", "utfs.io"]
+    domains: ['avatars.githubusercontent.com', "localhost", "cloudflare-ipfs.com", "utfs.io", "k.kakaocdn.net"]
   },
   typescript: {
     ignoreBuildErrors: true

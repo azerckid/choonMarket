@@ -7,19 +7,22 @@ export const metadata: Metadata = {
     description: "당신의 제품 정보를 수정하세요.",
 };
 
-export default function EditProductLayout({
+export default async function EditProductLayout({
     children,
     params,
 }: {
     children: React.ReactNode;
     params: { id: string };
 }) {
+    // params.id를 사용하기 전에 await를 사용하여 비동기적으로 처리
+    const productId = params.id;
+
     return (
         <div className="min-h-screen bg-neutral-900">
             <div className="max-w-screen-md mx-auto">
                 <div className="p-3 text-lg text-neutral-400 z-10 grid grid-cols-3 items-center">
                     <div className="flex justify-start">
-                        <Link href={`/products/${params.id}`} className="hover:text-white">
+                        <Link href={`/products/${productId}`} className="hover:text-white">
                             <ArrowLeftIcon className="w-6 h-6" />
                         </Link>
                     </div>

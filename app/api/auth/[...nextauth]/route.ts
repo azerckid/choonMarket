@@ -1,5 +1,6 @@
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth, { DefaultSession, AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import KakaoProvider from "next-auth/providers/kakao";
 import db from "@/lib/db";
 import bcrypt from "bcrypt";
 
@@ -12,8 +13,12 @@ declare module "next-auth" {
     }
 }
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
     providers: [
+        KakaoProvider({
+            clientId: process.env.KAKAO_CLIENT_ID!,
+            clientSecret: process.env.KAKAO_CLIENT_SECRET!,
+        }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
@@ -80,6 +85,8 @@ const handler = NextAuth({
         }
     },
     debug: process.env.NODE_ENV === "development",
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST }; 
