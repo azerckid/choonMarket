@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,6 +11,7 @@
 @layer base {
     body {
         @apply bg-[#205781];
+        font-family: 'Gowun Dodum', sans-serif;
     }
 
     a {
@@ -23,6 +26,16 @@
 
     .text-other-hello {
         @apply text-3xl font-semibold
+    }
+
+    .text-1\.5xl {
+        font-size: 1.25rem;
+        /* text-xl과 text-2xl 사이의 크기 */
+    }
+
+    .text-10xl {
+        font-size: 10rem;
+        /* 160px */
     }
 
     /* 스크롤바 숨기기 */

@@ -5,13 +5,15 @@ export default function Home() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6">
             <div className="my-auto flex flex-col items-center gap-2 *:font-medium ">
-                <span className="text-9xl">🥕</span>
-                <h1 className="text-4xl font-medium">당근</h1>
-                <h2 className="text-2xl">당근마켓에 어서오세요</h2>
+                <span className="text-10xl">🍋</span>
+                <h3 className="text-1.5xl text-center">
+                    감성 가득한 쇼핑몰,<br />
+                    합리적인 가격에 만나보세요!
+                </h3>
             </div>
             <div className="w-full flex flex-col items-center gap-3">
                 <Link href="/create-account"
-                    className="primary-btn text-lg">
+                    className="primary-btn text-lg bg-blue-500 hover:bg-pink-500 transition-colors duration-300">
                     시작하기
                 </Link>
                 <div className="flex gap-2">
