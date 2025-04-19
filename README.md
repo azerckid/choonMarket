@@ -18,8 +18,6 @@ ChoonMarket은 중고 거래를 위한 플랫폼입니다.
 - **Real-time**: Supabase Realtime
 - **Deployment**: Vercel
 
-## 환경 설정
-
 ### 필수 요구사항
 
 - Node.js 18.0.0 이상
@@ -83,3 +81,6 @@ yarn dev
 ## 라이선스
 
 MIT
+
+## TODO
+
