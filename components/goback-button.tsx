@@ -5,12 +5,17 @@ import { useRouter } from "next/navigation";
 
 interface GoBackButtonProps {
     className?: string;
+    href?: string;
 }
 
-export default function GoBackButton({ className = "" }: GoBackButtonProps) {
+export default function GoBackButton({ className = "", href }: GoBackButtonProps) {
     const router = useRouter();
     const onCloseClick = () => {
-        router.back();
+        if (href) {
+            router.push(href);
+        } else {
+            router.back();
+        }
     };
 
     return (
