@@ -9,6 +9,7 @@ import { productSchema, ProductType } from "./zodSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import GoBackButton from "@/components/goback-button";
 
 // type FormState = {
 //     fieldErrors?: {
@@ -97,6 +98,10 @@ export default function AddProduct() {
 
     return (
         <div>
+            <div className="flex justify-between items-center p-4 relative">
+                <GoBackButton href="/home" />
+                <h1 className="text-xl font-bold absolute left-1/2 transform -translate-x-1/2">상품 등록</h1>
+            </div>
             <form
                 action={onValid}
                 className="p-5 flex flex-col gap-5">
