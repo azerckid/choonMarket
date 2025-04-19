@@ -39,21 +39,21 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
                         )}
                     </div>
                     <div className="flex flex-col gap-1 self-end items-end">
-                        <span className="text-neutral-500">{product?.user.username}</span>
-                        <span className="text-neutral-500">
+                        <span className="text-neutral-100">{product?.user.username}</span>
+                        <span className="text-neutral-100">
                             {product?.updatedAt
                                 ? `${product.updatedAt.toLocaleDateString()}`
                                 : `${product?.createdAt?.toLocaleDateString()}`
                             }
                         </span>
-                        <span className="text-neutral-500">{product?.price.toLocaleString()} 원</span>
+                        <span className="text-neutral-100">{product?.price.toLocaleString()} 원</span>
                         <div className="relative flex flex-row items-center">
                             <ViewDetailsButton id={id} />
                         </div>
                     </div>
                 </div>
                 <div>
-                    <p className="text-neutral-500 p-10">{product?.description}</p>
+                    <p className="text-neutral-100 p-10">{product?.description}</p>
                 </div>
                 {product && <ProductCommentSection productId={product.id} isLoggedIn={!!session.user} />}
             </div>

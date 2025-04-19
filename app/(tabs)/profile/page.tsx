@@ -35,7 +35,7 @@ export default async function Profile() {
 
     return (
         <div className="flex flex-col gap-10 py-8 px-6">
-            <div className="flex flex-col gap-2 *:font-medium">
+            <div className="flex flex-col items-center gap-2 *:font-medium">
                 <Suspense fallback={<div>Loading...</div>}>
                     <h2 className="text-xl">Welcome, {formatUsername(user.username)}!</h2>
                 </Suspense>
@@ -43,13 +43,15 @@ export default async function Profile() {
             <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
                     <Suspense fallback={<div>Loading...</div>}>
-                        <Image
-                            src={user.avatar || "/default-avatar.png"}
-                            alt={`${user.username}'s avatar`}
-                            width={40}
-                            height={40}
-                            className="rounded-full"
-                        />
+                        <div className="flex justify-center">
+                            <Image
+                                src={user.avatar || "/default-avatar.png"}
+                                alt={`${user.username}'s avatar`}
+                                width={80}
+                                height={80}
+                                className="rounded-full border-4 border-white/20"
+                            />
+                        </div>
                     </Suspense>
                     <Suspense fallback={<div>Loading...</div>}>
                         <p><span className="font-medium">Email:</span> {user.email}</p>

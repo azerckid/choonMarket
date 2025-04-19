@@ -95,7 +95,7 @@ export default function ProductCommentSection({ productId, isLoggedIn }: Product
 
             <div className="space-y-4">
                 {comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-3 p-4 bg-neutral-900 rounded-lg border border-neutral-700">
+                    <div key={comment.id} className="flex gap-3 p-4 border-b border-neutral-400">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden">
                             <Image
                                 src={comment.user.avatar}
