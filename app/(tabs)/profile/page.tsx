@@ -32,7 +32,7 @@ export default async function Profile() {
     if (!user) {
         redirect("/login");
     }
-
+    console.log(user);
     return (
         <div className="flex flex-col gap-10 py-8 px-6">
             <div className="flex flex-col items-center gap-2 *:font-medium">
