@@ -14,15 +14,15 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
 
     return (
         <div className="fixed w-full py-6 h-full z-50 flex items-start justify-center bg-[#205781] left-0 top-0 overflow-y-auto">
-            <div className="max-w-screen-sm w-full flex flex-col gap-4 py-8 mb-12">
+            <div className="max-w-screen-sm w-full flex flex-col gap-4 py-8 mb-12 px-4">
                 <div className="flex flex-row gap-2 justify-between mb-4 h-16">
                     <div className="relative flex flex-row items-center">
                         <GobackButton />
                     </div>
                 </div>
-                <div className="flex flex-row gap-10 justify-center items-center">
+                <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 justify-center items-center">
                     <div className="flex flex-col gap-2">
-                        <h1 className="text-2xl font-bold">{product?.title}</h1>
+                        <h1 className="text-2xl font-bold text-center sm:text-left">{product?.title}</h1>
                         {product?.photo ? (
                             <Image
                                 src={`${product.photo}/public`}
@@ -37,7 +37,7 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
                             </div>
                         )}
                     </div>
-                    <div className="flex flex-col gap-1 self-end items-end">
+                    <div className="flex flex-col gap-1 items-end w-full sm:w-auto pr-4">
                         <span className="text-neutral-100">{product?.user.username}</span>
                         <span className="text-neutral-100">
                             {product?.updatedAt
@@ -52,7 +52,7 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
                     </div>
                 </div>
                 <div>
-                    <p className="text-neutral-100 p-10">{product?.description}</p>
+                    <p className="text-neutral-100 p-4 sm:p-10">{product?.description}</p>
                 </div>
                 {product && <ProductCommentSection productId={product.id} isLoggedIn={!!session.user} />}
             </div>
