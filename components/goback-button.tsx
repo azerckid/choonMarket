@@ -3,12 +3,11 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 
-interface CloseButtonProps {
-    id: string;
+interface GoBackButtonProps {
+    className?: string;
 }
 
-export default function CloseButton({ id }: CloseButtonProps) {
-    console.log("id", id);
+export default function GoBackButton({ className = "" }: GoBackButtonProps) {
     const router = useRouter();
     const onCloseClick = () => {
         router.back();
@@ -17,9 +16,9 @@ export default function CloseButton({ id }: CloseButtonProps) {
     return (
         <button
             onClick={onCloseClick}
-            className="text-neutral-500 hover:text-neutral-700 absolute top-0 right-0"
+            className={`flex items-center justify-center w-10 h-10 rounded-full border border-neutral-700 hover:bg-neutral-800 transition-colors ${className}`}
         >
-            <ArrowLeftIcon className="w-6 border-2 border-white rounded-full text-white hover:text-white" />
+            <ArrowLeftIcon className="w-5 h-5 text-neutral-400" />
         </button>
     );
 } 

@@ -87,7 +87,5 @@ MIT
 1. DELETE : Product delete (cascade chatting room)
 2. DELETE : a chatting text 
 3. ADD : products/id 화면에 모바일뷰 적용
-4. ADD : LoadingView (chat list )
-5. ADD : 만들기 버튼에 있는 로딩 아이콘을 지우기,채팅..등 모두 적용
-6. ADD : 모든화면 상단에 뒤로가기 버튼 
+4. ADD : 제품에 카테고리 추가(5개정도)
 

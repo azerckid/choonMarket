@@ -4,7 +4,7 @@ import db from "@/lib/db";
 import { UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import { formatUsername } from "@/lib/utils";
-import BackButton from "./components/back-button";
+import GoBackButton from "@/components/goback-button";
 
 interface User {
     id: number;
@@ -50,7 +50,7 @@ export default async function ChatLayout({
         <div className="flex flex-col h-screen">
             <div className="border-b border-neutral-800 p-4">
                 <div className="flex gap-3">
-                    <BackButton />
+                    <GoBackButton />
                 </div>
                 <div className="flex items-center justify-center gap-3">
                     <div className="relative size-10 overflow-hidden rounded-full">

@@ -17,9 +17,8 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
             <div className="max-w-screen-sm w-full flex flex-col gap-4 py-8 mb-12">
                 <div className="flex flex-row gap-2 justify-between mb-4 h-16">
                     <div className="relative flex flex-row items-center">
-                        <GobackButton id={id} />
+                        <GobackButton />
                     </div>
-
                 </div>
                 <div className="flex flex-row gap-10 justify-center items-center">
                     <div className="flex flex-col gap-2">
