@@ -54,6 +54,7 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isSending, setIsSending] = useState(false);
     const processedMessageIds = useRef<Set<string>>(new Set());
 
     /**
@@ -238,8 +239,9 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
      */
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!message.trim()) return;
+        if (!message.trim() || isSending) return;
 
+        setIsSending(true);
         try {
             console.log('Sending message:', message);
             const formData = new FormData();
@@ -278,6 +280,8 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
         } catch (error) {
             console.error('Error sending message:', error);
             setError('메시지 전송 중 오류가 발생했습니다.');
+        } finally {
+            setIsSending(false);
         }
     };
 
@@ -332,19 +336,21 @@ export default function ChatClient({ chatRoom, currentUser }: ChatClientProps) {
                 <div ref={messagesEndRef} />
             </div>
             <form onSubmit={handleSubmit} className="p-4 border-t border-neutral-800">
-                <div className="flex gap-2">
+                <div className="relative">
                     <input
                         type="text"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="메시지를 입력하세요..."
-                        className="flex-1 bg-neutral-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-neutral-800 rounded-lg px-4 py-2 pr-20 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isSending}
                     />
                     <button
                         type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                        disabled={isSending || !message.trim()}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-1.5 rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        전송
+                        {isSending ? "전송 중..." : "전송"}
                     </button>
                 </div>
             </form>

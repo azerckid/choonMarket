@@ -13,7 +13,7 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
     const session = await getSession();
 
     return (
-        <div className="fixed w-full h-full z-50 flex items-start justify-center bg-[#205781] left-0 top-0 overflow-y-auto">
+        <div className="fixed w-full py-6 h-full z-50 flex items-start justify-center bg-[#205781] left-0 top-0 overflow-y-auto">
             <div className="max-w-screen-sm w-full flex flex-col gap-4 py-8 mb-12">
                 <div className="flex flex-row gap-2 justify-between mb-4 h-16">
                     <div className="relative flex flex-row items-center">
