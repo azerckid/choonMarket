@@ -8,9 +8,10 @@ interface ConfirmModalProps {
     onConfirm: () => void;
     title: string;
     message: string;
+    isDeleting?: boolean;
 }
 
-export default function ConfirmModal({ isOpen, onClose, onConfirm, title, message }: ConfirmModalProps) {
+export default function ConfirmModal({ isOpen, onClose, onConfirm, title, message, isDeleting = false }: ConfirmModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -44,6 +45,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
                             onClose();
                         }}
                         className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                        disabled={isDeleting}
                     >
                         취소
                     </button>
@@ -53,9 +55,10 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
                             e.stopPropagation();
                             onConfirm();
                         }}
-                        className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
+                        className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isDeleting}
                     >
-                        삭제
+                        {isDeleting ? "삭제 중..." : "삭제"}
                     </button>
                 </div>
             </div>

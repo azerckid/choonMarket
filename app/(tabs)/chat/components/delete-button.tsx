@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { deleteChatRoomAction } from "../actions";
 import ConfirmModal from './confirm-modal';
+import { useRouter } from 'next/navigation';
 
 interface DeleteButtonProps {
     chatRoomId: string;
@@ -10,10 +11,20 @@ interface DeleteButtonProps {
 
 export default function DeleteButton({ chatRoomId }: DeleteButtonProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const router = useRouter();
 
     const handleDelete = async () => {
-        await deleteChatRoomAction(chatRoomId);
-        setIsModalOpen(false);
+        try {
+            setIsDeleting(true);
+            await deleteChatRoomAction(chatRoomId);
+            setIsModalOpen(false);
+            router.refresh(); // 채팅 리스트 새로고침
+        } catch (error) {
+            console.error('채팅방 삭제 중 오류 발생:', error);
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     return (
@@ -37,6 +48,7 @@ export default function DeleteButton({ chatRoomId }: DeleteButtonProps) {
                 onConfirm={handleDelete}
                 title="채팅방 삭제"
                 message="정말로 이 채팅방을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+                isDeleting={isDeleting}
             />
         </>
     );
