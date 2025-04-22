@@ -18,6 +18,7 @@ export async function getProduct(id: string) {
                 price: true,
                 description: true,
                 photo: true,
+                category: true,
             }
         });
 
@@ -62,6 +63,7 @@ export async function updateProduct(id: string, formData: FormData) {
         title: formData.get("title"),
         price: formData.get("price"),
         description: formData.get("description"),
+        category: formData.get("category"),
     };
 
     const result = await productSchema.safeParse(data);
@@ -77,6 +79,7 @@ export async function updateProduct(id: string, formData: FormData) {
             title: result.data.title,
             price: result.data.price,
             description: result.data.description,
+            category: result.data.category,
             photo: typeof result.data.photo === 'string' ? result.data.photo : `/${result.data.photo.name}`,
         },
     });
@@ -84,8 +87,7 @@ export async function updateProduct(id: string, formData: FormData) {
     // 캐시 갱신
     revalidateTag("product-detail");
     revalidateTag("product-title");
-    revalidateTag("product-list");
-    revalidateTag("xxxx");
+    revalidateTag("product-list-v2");
 
     return { success: true };
 }

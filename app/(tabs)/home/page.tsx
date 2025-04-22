@@ -10,8 +10,8 @@ export const metadata = {
     title: "Home",
 };
 
-const getCachedProduct = nextCache(getInitialProducts, ["product-list"], {
-    tags: ["product-list", "xxxx"],
+const getCachedProduct = nextCache(getInitialProducts, ["product-list-v2"], {
+    tags: ["product-list-v2"],
 });
 
 async function getInitialProducts() {
@@ -23,6 +23,7 @@ async function getInitialProducts() {
             createdAt: true,
             photo: true,
             id: true,
+            category: true,
         },
         take: 5,
         orderBy: {

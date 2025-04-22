@@ -5,6 +5,7 @@ import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { revalidateTag } from "next/cache";
+
 export async function uploadProduct(formData: FormData) {
     const session = await getSession();
     if (!session?.user?.id) {
@@ -19,6 +20,7 @@ export async function uploadProduct(formData: FormData) {
         title: formData.get("title"),
         price: formData.get("price"),
         description: formData.get("description"),
+        category: formData.get("category"),
     };
     const result = await productSchema.safeParse(data);
     if (!result.success) {
@@ -31,6 +33,7 @@ export async function uploadProduct(formData: FormData) {
             title: result.data.title,
             price: result.data.price,
             description: result.data.description,
+            category: result.data.category,
             photo: typeof result.data.photo === 'string' ? result.data.photo : `/${result.data.photo.name}`,
             user: {
                 connect: {
@@ -39,8 +42,7 @@ export async function uploadProduct(formData: FormData) {
             }
         },
     });
-    revalidateTag("product-list");
-    revalidateTag("xxxx");
+    revalidateTag("product-list-v2");
     revalidateTag("product-detail");
     revalidateTag("product-title");
 

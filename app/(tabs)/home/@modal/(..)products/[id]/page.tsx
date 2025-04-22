@@ -46,6 +46,7 @@ export default async function ModalPage({ params }: { params: Promise<{ id: stri
                             }
                         </span>
                         <span className="text-neutral-100">{product?.price.toLocaleString()} 원</span>
+                        <span className="text-neutral-100">{product?.category}</span>
                         <div className="relative flex flex-row items-center">
                             <ViewDetailsButton id={id} />
                         </div>

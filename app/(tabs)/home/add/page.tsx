@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import GoBackButton from "@/components/goback-button";
+import { Category } from "@prisma/client";
 
 // type FormState = {
 //     fieldErrors?: {
@@ -82,6 +83,7 @@ export default function AddProduct() {
             formData.append("title", data.title);
             formData.append("price", data.price.toString());
             formData.append("description", data.description);
+            formData.append("category", data.category);
 
             return uploadProduct(formData);
         } catch (error) {
@@ -161,6 +163,20 @@ export default function AddProduct() {
                     {...register("description")}
                     errors={errors?.description?.message ? [errors.description.message] : undefined}
                 />
+                <select
+                    {...register("category")}
+                    className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent text-white"
+                >
+                    <option value="" className="bg-neutral-800">카테고리 선택</option>
+                    {Object.values(Category).map((category) => (
+                        <option key={category} value={category} className="bg-neutral-800">
+                            {category}
+                        </option>
+                    ))}
+                </select>
+                {errors?.category?.message && (
+                    <span className="text-red-500 text-sm">{errors.category.message}</span>
+                )}
                 <Button title="작성 완료" />
             </form>
         </div>

@@ -4,13 +4,23 @@ import { InitialProducts } from "@/app/(tabs)/home/page";
 import ListProduct from "./list-product";
 import { useEffect, useRef, useState } from "react";
 import { getMoreProducts } from "@/app/(tabs)/home/actions";
+import { Category } from "@prisma/client";
+
+interface Product {
+    id: number;
+    title: string;
+    price: number;
+    photo: string;
+    createdAt: Date;
+    category: Category;
+}
 
 interface ProductListProps {
-    initialProducts: InitialProducts;
+    initialProducts: Product[];
 }
 
 export default function ProductList({ initialProducts }: ProductListProps) {
-    const [products, setProducts] = useState(initialProducts);
+    const [products, setProducts] = useState<Product[]>(initialProducts);
     const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(0);
     const [isLastPage, setIsLastPage] = useState(false);

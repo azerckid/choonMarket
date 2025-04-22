@@ -9,6 +9,7 @@ import { productSchema, ProductType } from "@/app/(tabs)/home/add/zodSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { Category } from "@prisma/client";
 
 interface EditProductFormProps {
     id: string;
@@ -17,6 +18,7 @@ interface EditProductFormProps {
         price: number;
         description: string;
         photo: string | null;
+        category: Category;
     };
 }
 
@@ -85,6 +87,7 @@ export default function EditProductForm({ id, initialData }: EditProductFormProp
             formData.append("title", data.title);
             formData.append("price", data.price.toString());
             formData.append("description", data.description);
+            formData.append("category", data.category);
 
             console.log("서버로 전송할 데이터:", {
                 photo: photoUrl,
@@ -111,6 +114,7 @@ export default function EditProductForm({ id, initialData }: EditProductFormProp
         setValue("price", initialData.price);
         setValue("description", initialData.description);
         setValue("photo", initialData.photo || "");
+        setValue("category", initialData.category);
 
         // 기존 이미지를 설정
         if (initialData.photo) {
@@ -183,6 +187,20 @@ export default function EditProductForm({ id, initialData }: EditProductFormProp
                     {...register("description")}
                     errors={errors?.description?.message ? [errors.description.message] : undefined}
                 />
+                <select
+                    {...register("category")}
+                    className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent text-white"
+                >
+                    <option value="" className="bg-neutral-800">카테고리 선택</option>
+                    {Object.values(Category).map((category) => (
+                        <option key={category} value={category} className="bg-neutral-800">
+                            {category}
+                        </option>
+                    ))}
+                </select>
+                {errors?.category?.message && (
+                    <span className="text-red-500 text-sm">{errors.category.message}</span>
+                )}
                 <Button title="수정 완료" />
             </form>
         </div>

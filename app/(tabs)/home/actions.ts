@@ -10,6 +10,7 @@ export async function getMoreProducts(page: number) {
             createdAt: true,
             photo: true,
             id: true,
+            category: true,
         },
         skip: page * 5,
         take: 5,
@@ -27,7 +28,8 @@ export async function getProducts() {
             price: true,
             createdAt: true,
             photo: true,
-            id: true
+            id: true,
+            category: true
         },
         take: 5,
         orderBy: {

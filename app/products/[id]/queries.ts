@@ -10,7 +10,14 @@ async function getProduct(id: number) {
     try {
         const product = await db.product.findUnique({
             where: { id },
-            include: {
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                price: true,
+                photo: true,
+                userId: true,
+                category: true,
                 user: {
                     select: {
                         username: true,

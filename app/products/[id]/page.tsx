@@ -42,7 +42,11 @@ export default async function ProductDetail({ params }: { params: { id: string }
                 <ProductHeader id={id} />
                 <ProductImage photo={product.photo} title={product.title} />
                 <ProductUserInfo username={product.user.username} avatar={product.user.avatar} />
-                <ProductDetails title={product.title} description={product.description} />
+                <ProductDetails
+                    title={product.title}
+                    description={product.description}
+                    category={product.category}
+                />
                 <ProductActions id={id} price={product.price} />
                 {isOwner && <ProductOwnerActions id={id} />}
             </div>

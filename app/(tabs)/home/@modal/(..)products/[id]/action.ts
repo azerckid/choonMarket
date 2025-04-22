@@ -8,7 +8,15 @@ export async function getProduct(id: string) {
             where: {
                 id: parseInt(id),
             },
-            include: {
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                price: true,
+                photo: true,
+                createdAt: true,
+                updatedAt: true,
+                category: true,
                 user: {
                     select: {
                         id: true,
