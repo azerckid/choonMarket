@@ -2,10 +2,11 @@ import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import db from "@/lib/db";
 import Button from "@/components/button";
-import { logout } from "./action";
+import { logout, getUserProducts } from "./action";
 import { formatUsername } from "@/lib/utils";
 import Image from "next/image";
 import { Suspense } from "react";
+import ProductList from "@/components/product-list";
 
 export default async function Profile() {
     const session = await getSession();
@@ -32,7 +33,9 @@ export default async function Profile() {
     if (!user) {
         redirect("/login");
     }
-    console.log(user);
+
+    const products = await getUserProducts(user.id);
+
     return (
         <div className="flex flex-col gap-10 py-8 px-6">
             <div className="flex flex-col items-center gap-2 *:font-medium">
@@ -63,6 +66,11 @@ export default async function Profile() {
                 <form action={logout}>
                     <Button title="Logout" />
                 </form>
+            </div>
+
+            <div className="mt-8">
+                <h3 className="text-lg font-semibold mb-4">내가 등록한 상품</h3>
+                <ProductList initialProducts={products} />
             </div>
         </div>
     );
