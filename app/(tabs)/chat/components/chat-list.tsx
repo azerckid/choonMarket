@@ -4,10 +4,7 @@ import Link from "next/link";
 import { formatUsername } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { ChatListProps, ChatRoom, MessagePayload, UnreadCounts } from "../types";
-import Image from "next/image";
-import { formatToTimeAgo } from "@/lib/utils";
-import { getChatRooms } from "../action";
+import { ChatListProps, ChatRoom, UnreadCounts } from "../types";
 import ChatListSkeleton from "./chat-list-skeleton";
 
 export default function ChatList({ initialRooms, initialUnreadCounts, session }: ChatListProps) {
