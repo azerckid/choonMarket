@@ -35,6 +35,7 @@ export default async function Profile() {
     }
 
     const products = await getUserProducts(user.id);
+    console.log(products);
 
     return (
         <div className="flex flex-col gap-10 py-8 px-6">
@@ -70,7 +71,7 @@ export default async function Profile() {
 
             <div className="mt-8">
                 <h3 className="text-lg font-semibold mb-4">내가 등록한 상품</h3>
-                <ProductList initialProducts={products} />
+                <ProductList initialProducts={products} disableInfiniteScroll={true} />
             </div>
         </div>
     );

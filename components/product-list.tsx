@@ -17,16 +17,19 @@ interface Product {
 
 interface ProductListProps {
     initialProducts: Product[];
+    disableInfiniteScroll?: boolean;
 }
 
-export default function ProductList({ initialProducts }: ProductListProps) {
+export default function ProductList({ initialProducts, disableInfiniteScroll = false }: ProductListProps) {
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(0);
-    const [isLastPage, setIsLastPage] = useState(false);
+    const [isLastPage, setIsLastPage] = useState(disableInfiniteScroll);
     const trigger = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
+        if (disableInfiniteScroll) return;
+
         const observer = new IntersectionObserver(
             async (
                 entries: IntersectionObserverEntry[],
@@ -58,14 +61,14 @@ export default function ProductList({ initialProducts }: ProductListProps) {
         return () => {
             observer.disconnect();
         };
-    }, [page]);
+    }, [page, disableInfiniteScroll]);
 
     return (
         <div className="p-5 flex flex-col gap-5 pb-40">
             {products.map((product) => (
                 <ListProduct key={product.id} {...product} />
             ))}
-            {!isLastPage ? (
+            {!isLastPage && !disableInfiniteScroll ? (
                 <span
                     ref={trigger}
                     style={{
