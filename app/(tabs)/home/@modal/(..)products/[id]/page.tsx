@@ -1,16 +1,15 @@
-import Image from "next/image";
 import { getProduct } from "./action";
+import { getSession } from "@/lib/session";
+import Image from "next/image";
 import GobackButton from "@/components/goback-button";
 import ViewDetailsButton from "@/components/view-details-button";
 import ProductCommentSection from "@/components/product-comment-section";
-import { getSession } from "@/lib/session";
 
 export default async function ModalPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const result = await getProduct(id);
-    const product = result.success ? result.data : null;
-    console.log(product?.photo);
     const session = await getSession();
+    const product = result.success ? result.data : null;
 
     return (
         <div className="fixed w-full py-6 h-full z-50 flex items-start justify-center bg-[#205781] left-0 top-0 overflow-y-auto">

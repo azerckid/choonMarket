@@ -6,7 +6,7 @@ export default function TabsLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div >
+        <div>
             {children}
             <TabBar />
         </div>

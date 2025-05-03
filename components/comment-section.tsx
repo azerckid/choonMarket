@@ -91,7 +91,7 @@ export default function CommentSection({ postId, isLoggedIn }: CommentSectionPro
 
             <div className="space-y-4">
                 {comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-3 p-4 bg-white rounded-lg border border-gray-200">
+                    <div key={comment.id} className="flex gap-3 p-4">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden">
                             <Image
                                 src={comment.user.avatar}
@@ -102,12 +102,12 @@ export default function CommentSection({ postId, isLoggedIn }: CommentSectionPro
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
-                                <span className="font-semibold text-black">{formatUsername(comment.user.username)}</span>
-                                <span className="text-sm text-gray-500">
+                                <span className="font-semibold">{formatUsername(comment.user.username)}</span>
+                                <span className="text-sm">
                                     {new Date(comment.createdAt).toLocaleDateString()}
                                 </span>
                             </div>
-                            <p className="mt-1 text-black">{comment.content}</p>
+                            <p className="mt-1">{comment.content}</p>
                         </div>
                     </div>
                 ))}

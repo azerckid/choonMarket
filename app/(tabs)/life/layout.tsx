@@ -10,7 +10,7 @@ export default function LifeLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="min-h-screen bg-neutral-900">
+        <div className="min-h-screen">
             <div className="max-w-screen-md mx-auto">
                 {children}
             </div>

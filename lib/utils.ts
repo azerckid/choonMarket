@@ -27,5 +27,13 @@ export function formatToWon(price: number): string {
 }
 
 export function formatUsername(username: string): string {
-    return username.replace('github_', '');
+    if (username.startsWith('github_')) {
+        return username.replace('github_', '');
+    } else if (username.startsWith('kakao_')) {
+        return username.replace('kakao_', '');
+    } else if (username.startsWith('naver_')) {
+        return username.replace('naver_', '');
+    } else {
+        return username;
+    }
 }

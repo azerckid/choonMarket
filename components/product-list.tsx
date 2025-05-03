@@ -34,8 +34,6 @@ export default function ProductList({ initialProducts, disableInfiniteScroll = f
                 entries: IntersectionObserverEntry[],
                 observer: IntersectionObserver
             ) => {
-                console.log("entries", entries);
-                console.log("observer", observer);
                 const element = entries[0];
                 if (element.isIntersecting && trigger.current) {
                     observer.unobserve(trigger.current);
