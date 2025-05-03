@@ -24,7 +24,7 @@ const rubick = Rubik_Scribble({
 });
 
 const metallica = localFont({
-  src: "./MetalMania-Regular.ttf",
+  src: "../public/MetalMania-Regular.ttf",
   variable: "--metallica-text",
 });
 
@@ -44,7 +44,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${roboto.variable} ${rubick.variable} ${metallica.variable} text-white max-w-screen-sm mx-auto`}
+        className={
+          `text-white max-w-screen-sm mx-auto
+          ${geistSans.variable} 
+          ${roboto.variable} 
+          ${rubick.variable} 
+          ${metallica.variable}`
+        }
       >
         <Providers>{children}</Providers>
       </body>

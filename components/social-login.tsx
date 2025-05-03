@@ -15,7 +15,7 @@ export default function SocialLogin() {
                     <Link
                         href={"/kakao/start"}
                         onClick={() => setKakaoLoading(true)}
-                        className={`primary-btn flex items-center justify-center gap-3 bg-[#FEE500] text-black hover:bg-[#FDD835] ${kakaoLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`primary-btn flex items-center justify-center gap-3 bg-[#FEE500] hover:bg-neutral-800 text-black hover:text-[#FDD835] ${kakaoLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         <svg
                             className="size-6"

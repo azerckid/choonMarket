@@ -53,6 +53,11 @@ export async function login(prevState: ActionState | null, formData: FormData): 
                 where: {
                     email: result.data.email,
                 },
+                select: {
+                    id: true,
+                    username: true,
+                    password: true,
+                },
             });
             if (!user) {
                 return { success: false, fieldErrors: { email: ["User not found"] } };
@@ -67,6 +72,7 @@ export async function login(prevState: ActionState | null, formData: FormData): 
             const session = await getSession();
             session.user = {
                 id: user.id,
+                username: user.username,
             }
             await session.save();
             return { success: true };

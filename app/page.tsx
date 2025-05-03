@@ -13,12 +13,12 @@ export default function Home() {
             </div>
             <div className="w-full flex flex-col items-center gap-3">
                 <Link href="/create-account"
-                    className="primary-btn text-lg bg-blue-500 hover:bg-pink-500 transition-colors duration-300">
+                    className="primary-btn text-lg transition-colors duration-300">
                     시작하기
                 </Link>
                 <div className="flex gap-2">
                     <span>이미 계정이 있나요?</span>
-                    <Link href="/login" className="hover:underline underline-offset-4;">LOGIN</Link>
+                    <Link href="/login" className="hover:underline underline-offset-4">로그인</Link>
                 </div>
             </div>
         </div>

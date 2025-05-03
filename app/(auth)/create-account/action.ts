@@ -129,11 +129,12 @@ export const createAccount = async (
         },
         select: {
           id: true,
+          username: true,
         }
       })
       // TODO: log the user in
       const session = await getSession();
-      session.user = { id: newUser.id };
+      session.user = { id: newUser.id, username: result.data.username };
       await session.save();
       console.log("session", session);
       return { success: true };
