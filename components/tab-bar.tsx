@@ -61,7 +61,7 @@ export default function TabBar() {
                 ) : (
                     <OutlineNewspaperIcon className="w-6 h-6" />
                 )}
-                <span>동네생활</span>
+                <span>게시판</span>
             </Link>
             <Link
                 href="/chat"
